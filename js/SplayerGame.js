@@ -1,3 +1,5 @@
+var height = 512;
+var width = 384;
 
 BasicGame.SplayerGame = function (game) {
 
@@ -28,9 +30,9 @@ BasicGame.SplayerGame = function (game) {
 BasicGame.SplayerGame.prototype = {
 
     create: function () {
-
-        //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
-
+        this.add.sprite(0,0,'background');
+        this.add.sprite(0,0,'crate');
+        this.add.sprite(height/2,width/2,'turret');
     },
 
     update: function () {
