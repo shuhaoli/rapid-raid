@@ -1,5 +1,6 @@
-var height = 512;
-var width = 384;
+var gameHeight = 384;
+var gameWidth = 512;
+var scorebarHeight = 50;
 
 BasicGame.SplayerGame = function (game) {
 
@@ -30,9 +31,25 @@ BasicGame.SplayerGame = function (game) {
 BasicGame.SplayerGame.prototype = {
 
     create: function () {
+        // add background image
         this.add.sprite(0,0,'background');
-        this.add.sprite(0,0,'crate');
-        this.add.sprite(height/2,width/2,'turret');
+        
+        // add pause button
+        this.btnPause = this.game.add.button(20, 20, 'pauseButton', this.pauseGame, this);
+
+        // add turrets with appropriate placement
+        tbspacing = 15;
+        btwspacing = 14;
+        turretSize = 32;
+
+        for (var i = 0; i < 16; i++) {
+            if (i < 8) {
+                this.add.sprite(0,scorebarHeight + i*(turretSize + btwspacing) + tbspacing,'turret');
+            }
+            else {
+                this.add.sprite(gameWidth - turretSize, scorebarHeight + (i - 8)*(turretSize + btwspacing) + tbspacing, 'turret');
+            }
+        }  
     },
 
     update: function () {
