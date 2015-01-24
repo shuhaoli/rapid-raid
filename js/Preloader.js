@@ -32,7 +32,8 @@ BasicGame.Preloader.prototype = {
 		this.load.image('background', 'assets/background.png');	
 		this.load.image('crate', 'assets/crate.png');	
 		this.load.image('turret', 'assets/turret.png');	
-		this.load.image('pauseButton', 'assets/pauseButton.png');	
+		this.load.image('pauseButton', 'assets/pauseButton.png');
+		this.load.image('pausePanel', 'assets/pausePanel.png')	
 	},
 
 	create: function () {
