@@ -35,7 +35,7 @@ BasicGame.SplayerGame.prototype = {
         this.add.sprite(0,0,'background');
         
         // add pause button
-        this.btnPause = this.game.add.button(20, 20, 'pauseButton', this.pauseGame, this);
+        this.btnPause = this.add.button(20, 20, 'pauseButton', this.pauseGame, this);
 
         // add turrets with appropriate placement
         tbspacing = 15;
@@ -47,7 +47,7 @@ BasicGame.SplayerGame.prototype = {
                 this.add.sprite(0,scorebarHeight + i*(turretSize + btwspacing) + tbspacing,'turret');
             }
             else {
-                this.add.sprite(gameWidth - turretSize, scorebarHeight + (i - 8)*(turretSize + btwspacing) + tbspacing, 'turret');
+                this.turret = this.add.sprite(gameWidth - turretSize, scorebarHeight + (i - 8)*(turretSize + btwspacing) + tbspacing, 'turret');
             }
         }  
     },
@@ -55,7 +55,17 @@ BasicGame.SplayerGame.prototype = {
     update: function () {
 
         //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
+        if (!this.paused)
+            this.turret.reset(Math.random()*gameWidth, Math.random()*gameHeight);
+    },
 
+    pauseGame: function () {
+        if (!this.paused) {
+            this.paused = true;
+        }
+        else {
+            this.paused = false;
+        }
     },
 
     quitGame: function (pointer) {
