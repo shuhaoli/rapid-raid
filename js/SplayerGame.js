@@ -1,6 +1,7 @@
 var gameHeight = 384;
 var gameWidth = 512;
 var scorebarHeight = 50;
+var menubarHeight = 30;
 
 BasicGame.SplayerGame = function (game) {
 
@@ -34,8 +35,25 @@ BasicGame.SplayerGame.prototype = {
         // add background image
         this.add.sprite(0,0,'background');
         
+        // add menu buttons
+        var buttonSide = 24;
+        var ypos = scorebarHeight + gameHeight + (menubarHeight - buttonSide)/2;
+        var xpos = gameWidth - buttonSide - (menubarHeight - buttonSide)/2;
+
+        // add quit button
+        this.quitButton = this.add.button(xpos, ypos, 'quitButton', this.quitGame, this);        
+        xpos -= buttonSide + (menubarHeight - buttonSide)/2;
+
         // add pause button
-        this.pauseButton = this.add.button(20, 20, 'pauseButton', this.pauseGame, this);
+        this.pauseButton = this.add.button(xpos, ypos, 'pauseButton', this.pauseGame, this);
+
+        // add resume button and set to invisible
+        this.resumeButton = this.add.button(xpos, ypos, 'resumeButton', this.pauseGame, this);
+        this.resumeButton.visible = false;
+        xpos -= buttonSide + (menubarHeight - buttonSide)/2;
+
+
+        this.restartButton = this.add.button(xpos, ypos, 'restartButton', this.restartGame, this);
 
         // add pause panel
         this.pausePanel = new PausePanel(this.game);
@@ -62,14 +80,26 @@ BasicGame.SplayerGame.prototype = {
             this.turret.reset(Math.random()*gameWidth, Math.random()*gameHeight);
     },
 
+    restartGame: function() {
+        this.state.start('SplayerGame');
+    },
+
     pauseGame: function () {
         if (!this.paused) {
             this.paused = true;
+            // show pause panel
             this.pausePanel.show();
+            // replace pause button with resume button
+            this.pauseButton.visible = false;
+            this.resumeButton.visible = true;
         }
         else {
             this.paused = false;
+            // hide pause panel
             this.pausePanel.hide();
+            // replace resume butotn with pause button
+            this.resumeButton.visible = false;
+            this.pauseButton.visible = true;
         }
     },
 
