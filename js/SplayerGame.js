@@ -30,7 +30,7 @@ BasicGame.SplayerGame = function (game) {
 };
 
 BasicGame.SplayerGame.prototype = {
-
+    // start game in paused state
     create: function () {
         // add background image
         this.add.sprite(0,0,'background');
@@ -44,12 +44,13 @@ BasicGame.SplayerGame.prototype = {
         this.quitButton = this.add.button(xpos, ypos, 'quitButton', this.quitGame, this);        
         xpos -= buttonSide + (menubarHeight - buttonSide)/2;
 
-        // add pause button
+        // add pause button and set to invisible
         this.pauseButton = this.add.button(xpos, ypos, 'pauseButton', this.pauseGame, this);
+        this.pauseButton.visible = false;
+        this.paused = true;
 
         // add resume button and set to invisible
         this.resumeButton = this.add.button(xpos, ypos, 'resumeButton', this.pauseGame, this);
-        this.resumeButton.visible = false;
         xpos -= buttonSide + (menubarHeight - buttonSide)/2;
 
 
@@ -58,6 +59,7 @@ BasicGame.SplayerGame.prototype = {
         // add pause panel
         this.pausePanel = new PausePanel(this.game);
         this.add.existing(this.pausePanel);
+        this.pausePanel.show();
 
         // add turrets with appropriate placement
         tbspacing = 15;
@@ -66,7 +68,7 @@ BasicGame.SplayerGame.prototype = {
 
         for (var i = 0; i < 16; i++) {
             if (i < 8) {
-                this.add.sprite(0,scorebarHeight + i*(turretSize + btwspacing) + tbspacing,'turret');
+                this.add.sprite(0,scorebarHeight + i*(turretSize + btwspacing) + tbspacing, 'turret');
             }
             else {
                 this.turret = this.add.sprite(gameWidth - turretSize, scorebarHeight + (i - 8)*(turretSize + btwspacing) + tbspacing, 'turret');
@@ -84,6 +86,7 @@ BasicGame.SplayerGame.prototype = {
         this.state.start('SplayerGame');
     },
 
+    // consider adding callback for resuming/pausing game in order to sync animation with actual pausing/resuming
     pauseGame: function () {
         if (!this.paused) {
             this.paused = true;

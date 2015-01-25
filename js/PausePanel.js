@@ -7,7 +7,6 @@ var PausePanel = function(game, parent){
 	this.panel = this.create(this.game.width/2, 10, 'pausePanel');
 	this.panel.anchor.setTo(0.5, 0.5);
 
-	
 
 	// Place it out of bounds
 	this.x = 0;
