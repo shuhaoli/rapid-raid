@@ -14,13 +14,16 @@ BasicGame.MainMenu.prototype = {
 		//	Here all we're doing is playing some music and adding a picture and button
 		//	Naturally I expect you to do something significantly better :)
 
-		this.music = this.add.audio('titleMusic');
-		this.music.play();
-
 		this.add.sprite(0, 0, 'titlepage');
 
-		this.playButton = this.add.button(400, 600, 'playButton', this.startGame, this, 'buttonOver', 'buttonOut', 'buttonOver');
+        // add settings button
+        this.settingsButton = this.add.button(64, 360, 'settingsButton', this.goSettings, this);
 
+        // add instructions button
+        this.instructionsButton = this.add.button(448, 360, 'instructionsButton', this.goInstructions, this);
+
+        // add play button
+        this.instructionsButton = this.add.button(256, 136, 'playButton', this.goPlay, this);
 	},
 
 	update: function () {
@@ -30,13 +33,23 @@ BasicGame.MainMenu.prototype = {
 	},
 
 	startGame: function (pointer) {
-
-		//	Ok, the Play Button has been clicked or touched, so let's stop the music (otherwise it'll carry on playing)
-		this.music.stop();
-
 		//	And start the actual game
 		this.state.start('Game');
+	},
 
+	goSettings: function (pointer) {
+		// Go to settings screen
+		this.state.start('Settings');
+	},
+
+	goInstructions: function (pointer) {
+		// Go to instructions
+		this.state.start('Instructions');
+	},
+
+	goPlay: function (pointer) {
+		// Go to selection screen
+		this.state.start('Selection');
 	}
 
 };
