@@ -29,6 +29,7 @@ BasicGame.Preloader.prototype = {
 		// this.load.audio('titleMusic', ['audio/main_menu.mp3']);
 		// this.load.bitmapFont('caslon', 'fonts/caslon.png', 'fonts/caslon.xml');
 		
+		// load game assets 
 		this.load.image('background', 'assets/background.png');	
 		this.load.image('crate', 'assets/crate.png');	
 		this.load.image('turret', 'assets/turret.png');	
@@ -37,6 +38,10 @@ BasicGame.Preloader.prototype = {
 		this.load.image('quitButton', 'assets/quitButton.png');
 		this.load.image('restartButton', 'assets/restartButton.png');
 		this.load.image('pausePanel', 'assets/pausePanel.png')	
+
+		// load score assets
+		this.load.image('sscoreBackground', 'assets/sscoreBackground.png');
+		this.load.image('replayButton', 'assets/replayButton.png');
 	},
 
 	create: function () {
@@ -58,7 +63,7 @@ BasicGame.Preloader.prototype = {
 		//	the update function completely.
 
 		
-		this.state.start('SplayerGame');
+		this.state.start('Sscore');
 	}
 
 };
