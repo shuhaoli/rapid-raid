@@ -14,29 +14,31 @@ BasicGame.Selection.prototype = {
 		//	Here all we're doing is playing some music and adding a picture and button
 		//	Naturally I expect you to do something significantly better :)
 
-		this.music = this.add.audio('titleMusic');
-		this.music.play();
+        // add singleplayer button
+        this.sPlayerButton = this.add.button(170, 100, 'sPlayerButton', this.goSPlayer, this);
 
-		this.add.sprite(0, 0, 'titlepage');
-
-		this.playButton = this.add.button(400, 600, 'playButton', this.startGame, this, 'buttonOver', 'buttonOut', 'buttonOver');
-
+        // add multiplayer button
+        this.mPlayerButton = this.add.button(170, 300, 'mPlayerButton', this.goMPlayer, this);
 	},
 
 	update: function () {
 
-		//	Do some nice funky main menu effect here
-
 	},
 
 	startGame: function (pointer) {
-
-		//	Ok, the Play Button has been clicked or touched, so let's stop the music (otherwise it'll carry on playing)
-		this.music.stop();
-
 		//	And start the actual game
 		this.state.start('Game');
 
+	},
+
+	goSPlayer: function (pointer) {
+		// start singleplayer game
+		this.state.start('SplayerGame');
+	},
+
+	goMPlayer: function (pointer) {
+		// start multiplayer game
+		this.state.start('MplayerGame');
 	}
 
 };

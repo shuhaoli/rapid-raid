@@ -42,6 +42,12 @@ BasicGame.Preloader.prototype = {
 		// load score assets
 		this.load.image('sscoreBackground', 'assets/sscoreBackground.png');
 		this.load.image('replayButton', 'assets/replayButton.png');
+		this.load.image('settingsButton', 'assets/settingsButton.png');
+		this.load.image('instructionsButton', 'assets/instructionsButton.png');
+		this.load.image('playButton', 'assets/playButton.png');
+		this.load.image('sPlayerButton', 'assets/sPlayerButton.png');
+		this.load.image('mPlayerButton', 'assets/mPlayerButton.png');
+		this.load.image('backButton', 'assets/backButton.png');
 	},
 
 	create: function () {
@@ -62,8 +68,8 @@ BasicGame.Preloader.prototype = {
 		//	If you don't have any music in your game then put the game.state.start line into the create function and delete
 		//	the update function completely.
 
-		
-		this.state.start('Sscore');
+		// start main menu at beginning of game
+		this.state.start('MainMenu');
 	}
 
 };
