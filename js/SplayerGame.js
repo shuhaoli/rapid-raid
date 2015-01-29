@@ -36,19 +36,19 @@ BasicGame.SplayerGame.prototype = {
         this.add.sprite(0,0,'background');
         
         // add menu buttons
-        var buttonSide = 20;
-        var ypos = scorebarHeight + gameHeight + (menubarHeight - buttonSide)/2;
-        var xpos = gameWidth - buttonSide - (menubarHeight - buttonSide)/2;
+        var buttonWidth = 60;
+        var buttonHeight = 20;
+        var ypos = scorebarHeight + gameHeight + (menubarHeight - buttonHeight)/2;
+        var xpos = gameWidth - buttonWidth;
 
-       
 
         // add pause button and set to invisible
         this.pauseButton = this.add.button(xpos, ypos, 'pauseButton', this.pauseGame, this);
-        this.pauseButton.visible = false;
-        this.paused = false;
 
         // add resume button and set to invisible
         this.resumeButton = this.add.button(xpos, ypos, 'resumeButton', this.pauseGame, this);
+        this.resumeButton.visible = false;
+        this.paused = false;
 
 
         // add pause panel
