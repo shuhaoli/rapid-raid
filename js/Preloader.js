@@ -43,7 +43,8 @@ BasicGame.Preloader.prototype = {
 		this.load.image('playButton', 'assets/playButton.png');
 		this.load.image('sPlayerButton', 'assets/sPlayerButton.png');
 		this.load.image('mPlayerButton', 'assets/mPlayerButton.png');
-		this.load.image('backButton', 'assets/backButton.png');
+		this.load.image('backButton', 'assets/backButton2.png');
+		this.load.image('instructionBackground', 'assets/instructionBackground.png');
 	},
 
 	create: function () {

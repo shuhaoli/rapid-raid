@@ -12,8 +12,10 @@ BasicGame.MainMenu.prototype = {
         // add settings button
         this.settingsButton = this.add.button(64, 360, 'settingsButton', this.goSettings, this);
 
-        // add instructions button
-        this.instructionsButton = this.add.button(448, 360, 'instructionsButton', this.goInstructions, this);
+        // add sInstructions button
+        this.sInstructionsButton = this.add.button(448, 360, 'instructionsButton', this.goSInstructions, this);
+        // add mInstructions button
+        this.mInstructionsButton = this.add.button(448, 360, 'instructionsButton', this.goMInstructions, this);
 
         // add play button
         this.playButton = this.add.button(170, 225, 'playButton', this.goPlay, this);
@@ -23,24 +25,26 @@ BasicGame.MainMenu.prototype = {
 
 	},
 
-	startGame: function (pointer) {
-		//	And start the actual game
-		this.state.start('Game');
-	},
-
 	goSettings: function (pointer) {
 		// Go to settings screen
 		this.state.start('Settings');
+
 	},
 
-	goInstructions: function (pointer) {
+	goSInstructions: function (pointer) {
 		// Go to instructions
-		this.state.start('Instructions');
+		this.state.start('sInstructions');
+	},
+
+	goMInstructions: function (pointer) {
+	// Go to instructions
+	this.state.start('mInstructions');
 	},
 
 	goPlay: function (pointer) {
 		// Go to selection screen
 		this.state.start('Selection');
+
 	}
 
 };

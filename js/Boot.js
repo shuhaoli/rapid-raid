@@ -1,4 +1,6 @@
 var BasicGame = {};
+var sInstructions = true;
+var mInstructions = true;
 
 BasicGame.Boot = function (game) {
 

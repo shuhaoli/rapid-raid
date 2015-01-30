@@ -22,23 +22,28 @@ BasicGame.Selection.prototype = {
 	},
 
 	update: function () {
-
-	},
-
-	startGame: function (pointer) {
-		//	And start the actual game
-		this.state.start('Game');
-
 	},
 
 	goSPlayer: function (pointer) {
 		// start singleplayer game
-		this.state.start('SplayerGame');
+		if (sInstructions) {
+		this.state.start('sInstructions');
+		sInstructions = false;
+		} else {
+			this.state.start('SplayerGame');
+		}
 	},
 
 	goMPlayer: function (pointer) {
 		// start multiplayer game
-		this.state.start('MplayerGame');
+		if (mInstructions) {
+		this.state.start('mInstructions');
+		mInstructions = false;
+		} else {
+			this.state.start('MplayerGame');
+		}
+		
 	}
+
 
 };
