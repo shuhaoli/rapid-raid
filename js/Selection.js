@@ -27,8 +27,7 @@ BasicGame.Selection.prototype = {
 	goSPlayer: function (pointer) {
 		// start singleplayer game
 		if (sInstructions) {
-		this.state.start('sInstructions');
-		sInstructions = false;
+			this.state.start('sInstructions');
 		} else {
 			this.state.start('SplayerGame');
 		}
@@ -37,8 +36,7 @@ BasicGame.Selection.prototype = {
 	goMPlayer: function (pointer) {
 		// start multiplayer game
 		if (mInstructions) {
-		this.state.start('mInstructions');
-		mInstructions = false;
+			this.state.start('mInstructions');
 		} else {
 			this.state.start('MplayerGame');
 		}

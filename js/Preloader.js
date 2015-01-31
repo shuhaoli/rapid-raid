@@ -35,16 +35,18 @@ BasicGame.Preloader.prototype = {
 		this.load.image('turretR', 'assets/turretR.png');	
 		this.load.image('pauseButton', 'assets/pauseButton1.png');
 		this.load.image('resumeButton', 'assets/resumeButton1.png');
-		this.load.image('quitButton', 'assets/quitButton1.png');
-		this.load.image('restartButton', 'assets/restartButton1.png');
-		this.load.image('pausePanel', 'assets/pausePanel1.png')	
+		this.load.image('quitButton', 'assets/quitButton2.png');
+		this.load.image('restartButton', 'assets/restartButton2.png');
+		this.load.image('pausePanel', 'assets/pausePanel2.png')	
 		this.load.image('settingsButton', 'assets/settingsButton.png');
 		this.load.image('instructionsButton', 'assets/instructionsButton.png');
 		this.load.image('playButton', 'assets/playButton.png');
 		this.load.image('sPlayerButton', 'assets/sPlayerButton.png');
 		this.load.image('mPlayerButton', 'assets/mPlayerButton.png');
 		this.load.image('backButton', 'assets/backButton2.png');
-		this.load.image('instructionBackground', 'assets/instructionBackground.png');
+		this.load.image('sInstructionBackground', 'assets/sInstructionBackgroundExample.png');
+		this.load.image('mInstructionBackground', 'assets/mInstructionBackgroundExample.png');
+		this.load.image('startButton', 'assets/startButton.png');
 	},
 
 	create: function () {

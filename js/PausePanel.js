@@ -14,7 +14,7 @@ var PausePanel = function(game, parent){
 
 
 	 // Add play button
-	 var buttonHeight = 25;
+	 var buttonHeight = 20;
 	 var buttonWidth = 60;
 	 var panelHeight = 224;
 	 var panelWidth = 352;
@@ -26,7 +26,7 @@ var PausePanel = function(game, parent){
 	this.add(this.quitButton);
 
 	 // Add play button
-	this.restartButton = this.game.add.button(this.game.width/2 - panelWidth/2 + 10, this.game.height/4 + panelHeight - buttonHeight
+	this.restartButton = this.game.add.button(this.game.width/2 - panelWidth/2, this.game.height/4 + panelHeight - buttonHeight
 		,'restartButton', function(){
 		game.state.getCurrentState().restartGame()}, this);
 	this.add(this.restartButton);
