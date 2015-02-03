@@ -1,7 +1,3 @@
-var gameHeight = 384;
-var gameWidth = 512;
-var scorebarHeight = 40;
-var menubarHeight = 20;
 
 BasicGame.SplayerGame = function (game) {
 
