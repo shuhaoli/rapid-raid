@@ -1,7 +1,7 @@
 var gameHeight = 384;
 var gameWidth = 512;
-var scorebarHeight = 50;
-var menubarHeight = 30;
+var scorebarHeight = 40;
+var menubarHeight = 20;
 
 BasicGame.SplayerGame = function (game) {
 
@@ -36,30 +36,24 @@ BasicGame.SplayerGame.prototype = {
         this.add.sprite(0,0,'background');
         
         // add menu buttons
-        var buttonSide = 24;
-        var ypos = scorebarHeight + gameHeight + (menubarHeight - buttonSide)/2;
-        var xpos = gameWidth - buttonSide - (menubarHeight - buttonSide)/2;
+        var buttonWidth = 60;
+        var buttonHeight = 20;
+        var ypos = scorebarHeight + gameHeight + (menubarHeight - buttonHeight)/2;
+        var xpos = gameWidth - buttonWidth;
 
-        // add quit button
-        this.quitButton = this.add.button(xpos, ypos, 'quitButton', this.quitGame, this);        
-        xpos -= buttonSide + (menubarHeight - buttonSide)/2;
 
         // add pause button and set to invisible
         this.pauseButton = this.add.button(xpos, ypos, 'pauseButton', this.pauseGame, this);
-        this.pauseButton.visible = false;
-        this.paused = true;
 
         // add resume button and set to invisible
         this.resumeButton = this.add.button(xpos, ypos, 'resumeButton', this.pauseGame, this);
-        xpos -= buttonSide + (menubarHeight - buttonSide)/2;
+        this.resumeButton.visible = false;
+        this.paused = false;
 
-
-        this.restartButton = this.add.button(xpos, ypos, 'restartButton', this.restartGame, this);
 
         // add pause panel
         this.pausePanel = new PausePanel(this.game);
         this.add.existing(this.pausePanel);
-        this.pausePanel.show();
 
         // add turrets with appropriate placement
         tbspacing = 15;
@@ -68,10 +62,10 @@ BasicGame.SplayerGame.prototype = {
 
         for (var i = 0; i < 16; i++) {
             if (i < 8) {
-                this.add.sprite(0,scorebarHeight + i*(turretSize + btwspacing) + tbspacing, 'turret');
+                this.add.sprite(0,scorebarHeight + i*(turretSize + btwspacing) + tbspacing, 'turretL');
             }
             else {
-                this.turret = this.add.sprite(gameWidth - turretSize, scorebarHeight + (i - 8)*(turretSize + btwspacing) + tbspacing, 'turret');
+                this.turret = this.add.sprite(gameWidth - 28, scorebarHeight + (i - 8)*(turretSize + btwspacing) + tbspacing, 'turretR');
             }
         }  
     },
@@ -106,6 +100,7 @@ BasicGame.SplayerGame.prototype = {
         }
     },
 
+
     quitGame: function (pointer) {
 
         //  Here you should destroy anything you no longer need.
@@ -115,5 +110,6 @@ BasicGame.SplayerGame.prototype = {
         this.state.start('MainMenu');
 
     }
+
 
 };

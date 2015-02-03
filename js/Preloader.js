@@ -42,6 +42,15 @@ BasicGame.Preloader.prototype = {
 		// load score assets
 		this.load.image('sscoreBackground', 'assets/sscoreBackground.png');
 		this.load.image('replayButton', 'assets/replayButton.png');
+		this.load.image('background', 'assets/background3.png');	
+		this.load.image('crate', 'assets/darkcrate-32.png');	
+		this.load.image('turretL', 'assets/turretL.png');	
+		this.load.image('turretR', 'assets/turretR.png');	
+		this.load.image('pauseButton', 'assets/pauseButton1.png');
+		this.load.image('resumeButton', 'assets/resumeButton1.png');
+		this.load.image('quitButton', 'assets/quitButton1.png');
+		this.load.image('restartButton', 'assets/restartButton1.png');
+		this.load.image('pausePanel', 'assets/pausePanel1.png')	
 		this.load.image('settingsButton', 'assets/settingsButton.png');
 		this.load.image('instructionsButton', 'assets/instructionsButton.png');
 		this.load.image('playButton', 'assets/playButton.png');
