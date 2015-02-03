@@ -29,7 +29,7 @@ BasicGame.SplayerGame.prototype = {
     // start game in paused state
     create: function () {
         // add background image
-        this.add.sprite(0,0,'background');
+        this.add.sprite(0,0,'background3');
         
         // add menu buttons
         var buttonWidth = 60;
@@ -98,9 +98,6 @@ BasicGame.SplayerGame.prototype = {
 
 
     quitGame: function (pointer) {
-
-        //  Here you should destroy anything you no longer need.
-        //  Stop music, delete sprites, purge caches, free resources, all that good stuff.
 
         //  Then let's go back to the main menu.
         this.state.start('MainMenu');

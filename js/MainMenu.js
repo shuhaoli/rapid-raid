@@ -9,6 +9,8 @@ BasicGame.MainMenu = function (game) {
 BasicGame.MainMenu.prototype = {
 
 	create: function () {
+        this.add.sprite(0,0,'background1');
+
         // add settings button
         this.settingsButton = this.add.button(64, 360, 'settingsButton', this.goSettings, this);
 
