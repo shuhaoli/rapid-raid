@@ -29,6 +29,7 @@ BasicGame.Preloader.prototype = {
 		// this.load.audio('titleMusic', ['audio/main_menu.mp3']);
 		// this.load.bitmapFont('caslon', 'fonts/caslon.png', 'fonts/caslon.xml');
 		
+		this.load.image('settingsButton', 'assets/settingsButton.png');
 		this.load.image('background1', 'assets/background1.png');
 		this.load.image('background2', 'assets/background2.png');
 		this.load.image('background3', 'assets/background3.png');	
@@ -36,7 +37,6 @@ BasicGame.Preloader.prototype = {
 		this.load.image('turretL', 'assets/turretL.png');	
 		this.load.image('turretR', 'assets/turretR.png');	
 		this.load.image('pausePanel', 'assets/pausePanel2.png')	
-		this.load.image('settingsButton', 'assets/settingsButton.png');
 		this.load.image('instructionsButton', 'assets/instructionsButton.png');
 		this.load.image('sInstructionBackground', 'assets/sInstructionBackgroundExample.png');
 		this.load.image('mInstructionBackground', 'assets/mInstructionBackgroundExample.png');
