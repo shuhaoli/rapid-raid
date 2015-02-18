@@ -1,5 +1,6 @@
 var crates;
-var currentCrate;
+var remainingCrates = [];
+var selectedCrate;
 
 
 BasicGame.sCrate = function (game) {
@@ -9,16 +10,18 @@ BasicGame.sCrate = function (game) {
 BasicGame.sCrate.prototype = {
 
     create: function () {
-        this.initMap();
+        // add background image
+        this.add.sprite(0,0,'background3');
+        
         this.initTurrets();
         this.initCrates();
+        this.initMap();
     },
 
     // initializes the background, buttons and pause panel
     initMap: function() {
-         // add background image
-        this.add.sprite(0,0,'background3');
-        
+       
+
         // add menu buttons
         var buttonWidth = 60;
         var buttonHeight = 20;
@@ -65,6 +68,7 @@ BasicGame.sCrate.prototype = {
         crates = this.add.group();
 
         var numCrates = 8;
+        var currentCrate;
         var xposCrateInit = 20;
         var yposCrateInit = 20;
         var xSpacing = 40;
@@ -84,34 +88,52 @@ BasicGame.sCrate.prototype = {
             currentCrate.anchor.setTo(0.5, 0.5);
 
 
-            // currentSprite.originalPosition = currentCrate.position.clone();
-
-            // currentCrate.inputEnabled = true;
-            // currentCrate.input.enableDrag();
-
-            // currentCrate.events.onDragStart.add(startDrag, this);
-            // currentCrate.events.onDragStop.add(stopDrag, this);
-
+            remainingCrates.push(currentCrate);
             crates.add(currentCrate);
         }
 
         this.physics.startSystem(Phaser.Physics.ARCADE);
-        this.physics.enable(currentCrate, Phaser.Physics.ARCADE);
-        this.input.onDown.add(this.placeCrate, this);
-
-        this.editButton = this.add.button(gameWidth - 110, 8, 'editButton', this.editCrates, this);
-        this.doneButton = this.add.button(gameWidth - 55, 8, 'doneButton', this.doneCrates, this);   
+        
+        this.editButton = this.add.button(gameWidth - 110, 8, 'editButton', this.addCrate, this);
+        this.doneButton = this.add.button(gameWidth - 55, 8, 'editButton', this.editCrates, this);   
     },
 
     placeCrate: function(pointer) {
-        currentCrate.body.velocity = 0;
-        currentCrate = null;
+        if (selectedCrate != null) {
+            selectedCrate.body.velocity = 0;
+            selectedCrate = null;
+            // this.input.onDown.removeAll();
+        }
     },
 
     update: function () {
-        if (currentCrate != null) {
+        if (selectedCrate != null) {
             // 60 is default speed, 50 is 50 ms time requirement
-            this.physics.arcade.moveToPointer(currentCrate, 60, this.input.activePointer, 50);
+            this.physics.arcade.moveToPointer(selectedCrate, 60, this.input.activePointer, 50);
+        }
+    },
+
+    restartGame: function() {
+        this.state.start('SCrate');
+    },
+
+    // consider adding callback for resuming/pausing game in order to sync animation with actual pausing/resuming
+    pauseGame: function () {
+        if (!this.paused) {
+            this.paused = true;
+            // show pause panel
+            this.pausePanel.show();
+            // replace pause button with resume button
+            this.pauseButton.visible = false;
+            this.resumeButton.visible = true;
+        }
+        else {
+            this.paused = false;
+            // hide pause panel
+            this.pausePanel.hide();
+            // replace resume butotn with pause button
+            this.resumeButton.visible = false;
+            this.pauseButton.visible = true;
         }
     },
 
@@ -125,9 +147,13 @@ BasicGame.sCrate.prototype = {
 
     },
 
-    editCrates: function() {},
+    addCrate: function() {
+        selectedCrate = remainingCrates.pop();
+        this.physics.enable(selectedCrate, Phaser.Physics.ARCADE);
+        this.input.onDown.add(this.placeCrate, this);
+    },
 
-    doneCrates: function() {}
+    editCrates: function() {}
 };
 
 // function startDrag(currentSprite) {
