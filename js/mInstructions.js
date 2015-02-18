@@ -41,7 +41,7 @@ BasicGame.mInstructions.prototype = {
 
 	goBack: function (pointer) {
 		this.state.start('MainMenu');
-		this,fromMainMenu = false;
+		this.fromMainMenu = false;
 	}
 
 };

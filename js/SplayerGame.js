@@ -1,4 +1,3 @@
-
 BasicGame.SplayerGame = function (game) {
 
     //  When a State is added to Phaser it automatically has the following properties set on it, even if they already exist:
@@ -24,6 +23,8 @@ BasicGame.SplayerGame = function (game) {
     //  But do consider them as being 'reserved words', i.e. don't create a property for your own game called "world" or you'll over-write the world reference.
 
 };
+
+var sprites;
 
 BasicGame.SplayerGame.prototype = {
     // start game in paused state
@@ -63,13 +64,56 @@ BasicGame.SplayerGame.prototype = {
             else {
                 this.turret = this.add.sprite(gameWidth - 28, scorebarHeight + (i - 8)*(turretSize + btwspacing) + tbspacing, 'turretR');
             }
-        }  
+        }
+
+        //Crate Implementation 
+        sprites = this.add.group();
+
+        var currentSprite;
+        var numCrates = 8;
+        var xposCrateInit = 20;
+        var yposCrateInit = 20;
+        var xSpacing = 40;
+
+        for (i = 0; i < 8; i++) {
+            var randSelection = Math.floor((Math.random() * 3));
+            var crateImage;
+            if (randSelection == 0){
+                crateImage = "darkcrate-32";
+            } else if (randSelection == 1) {
+                crateImage = "medcrate-24";
+            } else {
+                crateImage = "lightcrate-16";
+            }
+
+            currentSprite = sprites.create(xposCrateInit + i*xSpacing, yposCrateInit, crateImage);
+            currentSprite.anchor.setTo(0.5, 0.5);
+
+            this.physics.arcade.enable(currentSprite);
+
+            currentSprite.originalPosition = currentSprite.position.clone();
+
+            currentSprite.inputEnabled = true;
+            currentSprite.input.enableDrag();
+
+            currentSprite.events.onDragStart.add(startDrag, this);
+            currentSprite.events.onDragStop.add(stopDrag, this);
+
+            sprites.add(currentSprite);
+        }
+
+        this.editButton = this.add.button(gameWidth - 110, 8, 'editButton', editCrates, this);
+        this.doneButton = this.add.button(gameWidth - 55, 8, 'doneButton', doneCrates, this);
+
+
     },
+
+
 
     update: function () {
         //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
-        if (!this.paused) 
-            this.turret.reset(Math.random()*gameWidth, Math.random()*gameHeight);
+        //if (!this.paused) 
+         //   this.turret.reset(Math.random()*gameWidth, Math.random()*gameHeight);
     },
 
     restartGame: function() {
@@ -106,3 +150,23 @@ BasicGame.SplayerGame.prototype = {
 
 
 };
+
+function startDrag(currentSprite) {
+    currentSprite.body.moves = false;    
+}
+
+
+function stopDrag(currentSprite) {
+    currentSprite.body.moves = true;
+    //this.physics.arcade.overlap(currentSprite, sprites, function(){
+    //    currentSprite.position.copyFrom(currentSprite.originalPosition);
+    //});
+}
+
+function editCrates() {
+    //!!!! this is a stub
+}
+
+function doneCrates() {
+    //!!! this is a stub
+}
