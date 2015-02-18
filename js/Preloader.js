@@ -35,25 +35,19 @@ BasicGame.Preloader.prototype = {
 		this.load.image('crate', 'assets/darkcrate-32.png');	
 		this.load.image('turretL', 'assets/turretL.png');	
 		this.load.image('turretR', 'assets/turretR.png');	
-		this.load.image('pauseButton', 'assets/pauseButton1.png');
-		this.load.image('resumeButton', 'assets/resumeButton1.png');
-		this.load.image('quitButton', 'assets/quitButton2.png');
-		this.load.image('restartButton', 'assets/restartButton2.png');
 		this.load.image('pausePanel', 'assets/pausePanel2.png')	
 		this.load.image('settingsButton', 'assets/settingsButton.png');
 		this.load.image('instructionsButton', 'assets/instructionsButton.png');
-		this.load.image('playButton', 'assets/playButton.png');
-		this.load.image('sPlayerButton', 'assets/sPlayerButton.png');
-		this.load.image('mPlayerButton', 'assets/mPlayerButton.png');
-		this.load.image('backButton', 'assets/backButton2.png');
 		this.load.image('sInstructionBackground', 'assets/sInstructionBackgroundExample.png');
 		this.load.image('mInstructionBackground', 'assets/mInstructionBackgroundExample.png');
-		this.load.image('startButton', 'assets/startButton.png');
 		this.load.image('darkcrate-32', 'assets/darkcrate-32.png');
 		this.load.image('medcrate-24', 'assets/medcrate-24.png');
 		this.load.image('lightcrate-16', 'assets/lightcrate-16.png');
-		this.load.image('editButton', 'assets/editButton1.png');
-		this.load.image('doneButton', 'assets/doneButton1.png');
+		this.load.image('selectionBackground', 'assets/selectionBackground.png');
+		this.load.image('selectionButton', 'assets/selectionButton.png');
+		this.load.image('smallButton', 'assets/smallButton.png');
+		this.load.image('medButton', 'assets/medButton.png');
+
 	},
 
 	create: function () {
