@@ -117,22 +117,4 @@ BasicGame.SplayerGame.prototype = {
 
 };
 
-function startDrag(currentSprite) {
-    currentSprite.body.moves = false;    
-}
 
-
-function stopDrag(currentSprite) {
-    currentSprite.body.moves = true;
-    //this.physics.arcade.overlap(currentSprite, sprites, function(){
-    //    currentSprite.position.copyFrom(currentSprite.originalPosition);
-    //});
-}
-
-function editCrates() {
-    //!!!! this is a stub
-}
-
-function doneCrates() {
-    //!!! this is a stub
-}

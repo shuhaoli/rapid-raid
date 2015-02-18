@@ -1,4 +1,5 @@
 var crates;
+var currentCrate;
 
 
 BasicGame.sCrate = function (game) {
@@ -63,7 +64,6 @@ BasicGame.sCrate.prototype = {
         //Crate Implementation 
         crates = this.add.group();
 
-        var currentSprite;
         var numCrates = 8;
         var xposCrateInit = 20;
         var yposCrateInit = 20;
@@ -80,30 +80,39 @@ BasicGame.sCrate.prototype = {
                 crateImage = "lightcrate-16";
             }
 
-            currentSprite = crates.create(xposCrateInit + i*xSpacing, yposCrateInit, crateImage);
-            currentSprite.anchor.setTo(0.5, 0.5);
+            currentCrate = crates.create(xposCrateInit + i*xSpacing, yposCrateInit, crateImage);
+            currentCrate.anchor.setTo(0.5, 0.5);
 
-            this.physics.arcade.enable(currentSprite);
 
-            currentSprite.originalPosition = currentSprite.position.clone();
+            // currentSprite.originalPosition = currentCrate.position.clone();
 
-            currentSprite.inputEnabled = true;
-            currentSprite.input.enableDrag();
+            // currentCrate.inputEnabled = true;
+            // currentCrate.input.enableDrag();
 
-            currentSprite.events.onDragStart.add(startDrag, this);
-            currentSprite.events.onDragStop.add(stopDrag, this);
+            // currentCrate.events.onDragStart.add(startDrag, this);
+            // currentCrate.events.onDragStop.add(stopDrag, this);
 
-            crates.add(currentSprite);
+            crates.add(currentCrate);
         }
 
-        this.editButton = this.add.button(gameWidth - 110, 8, 'editButton', editCrates, this);
-        this.doneButton = this.add.button(gameWidth - 55, 8, 'doneButton', doneCrates, this);   
+        this.physics.startSystem(Phaser.Physics.ARCADE);
+        this.physics.enable(currentCrate, Phaser.Physics.ARCADE);
+        this.input.onDown.add(this.placeCrate, this);
+
+        this.editButton = this.add.button(gameWidth - 110, 8, 'editButton', this.editCrates, this);
+        this.doneButton = this.add.button(gameWidth - 55, 8, 'doneButton', this.doneCrates, this);   
+    },
+
+    placeCrate: function(pointer) {
+        currentCrate.body.velocity = 0;
+        currentCrate = null;
     },
 
     update: function () {
-
-        //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
-
+        if (currentCrate != null) {
+            // 60 is default speed, 50 is 50 ms time requirement
+            this.physics.arcade.moveToPointer(currentCrate, 60, this.input.activePointer, 50);
+        }
     },
 
     quitGame: function (pointer) {
@@ -115,4 +124,28 @@ BasicGame.sCrate.prototype = {
         this.state.start('MainMenu');
 
     },
+
+    editCrates: function() {},
+
+    doneCrates: function() {}
 };
+
+// function startDrag(currentSprite) {
+//     currentSprite.body.moves = false;    
+// }
+
+
+// function stopDrag(currentSprite) {
+//     currentSprite.body.moves = true;
+//     //this.physics.arcade.overlap(currentSprite, sprites, function(){
+//     //    currentSprite.position.copyFrom(currentSprite.originalPosition);
+//     //});
+// }
+
+// function editCrates() {
+//     //!!!! this is a stub
+// }
+
+// function doneCrates() {
+//     //!!! this is a stub
+// }
