@@ -36,7 +36,7 @@ BasicGame.sInstructions.prototype = {
 
 	goPlay: function(pointer){
 		sInstructions = false;
-		this.state.start('SplayerGame');
+		this.state.start('SCrate');
 	},
 
 	goBack: function (pointer) {

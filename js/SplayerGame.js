@@ -24,12 +24,16 @@ BasicGame.SplayerGame = function (game) {
 
 };
 
-var sprites;
-
 BasicGame.SplayerGame.prototype = {
     // start game in paused state
     create: function () {
-        // add background image
+        this.initMap();
+        this.initTurrets();
+    },
+
+    // initializes the background, buttons and pause panel
+    initMap: function() {
+         // add background image
         this.add.sprite(0,0,'background3');
         
         // add menu buttons
@@ -51,64 +55,26 @@ BasicGame.SplayerGame.prototype = {
         // add pause panel
         this.pausePanel = new PausePanel(this.game);
         this.add.existing(this.pausePanel);
+    },
 
+    // initializes turrets
+    initTurrets: function() {
         // add turrets with appropriate placement
-        tbspacing = 15;
-        btwspacing = 14;
-        turretSize = 32;
+        var numTurrets = 16;
+        var tbspacing = 15;
+        var btwspacing = 14;
+        var turretSize = 32;
 
-        for (var i = 0; i < 16; i++) {
-            if (i < 8) {
+
+        for (var i = 0; i < numTurrets; i++) {
+            if (i < numTurrets/2) {
                 this.add.sprite(0,scorebarHeight + i*(turretSize + btwspacing) + tbspacing, 'turretL');
             }
             else {
-                this.turret = this.add.sprite(gameWidth - 28, scorebarHeight + (i - 8)*(turretSize + btwspacing) + tbspacing, 'turretR');
+                this.turret = this.add.sprite(gameWidth - 28, scorebarHeight + (i - numTurrets/2)*(turretSize + btwspacing) + tbspacing, 'turretR');
             }
         }
-
-        //Crate Implementation 
-        sprites = this.add.group();
-
-        var currentSprite;
-        var numCrates = 8;
-        var xposCrateInit = 20;
-        var yposCrateInit = 20;
-        var xSpacing = 40;
-
-        for (i = 0; i < 8; i++) {
-            var randSelection = Math.floor((Math.random() * 3));
-            var crateImage;
-            if (randSelection == 0){
-                crateImage = "darkcrate-32";
-            } else if (randSelection == 1) {
-                crateImage = "medcrate-24";
-            } else {
-                crateImage = "lightcrate-16";
-            }
-
-            currentSprite = sprites.create(xposCrateInit + i*xSpacing, yposCrateInit, crateImage);
-            currentSprite.anchor.setTo(0.5, 0.5);
-
-            this.physics.arcade.enable(currentSprite);
-
-            currentSprite.originalPosition = currentSprite.position.clone();
-
-            currentSprite.inputEnabled = true;
-            currentSprite.input.enableDrag();
-
-            currentSprite.events.onDragStart.add(startDrag, this);
-            currentSprite.events.onDragStop.add(stopDrag, this);
-
-            sprites.add(currentSprite);
-        }
-
-        this.editButton = this.add.button(gameWidth - 110, 8, 'editButton', editCrates, this);
-        this.doneButton = this.add.button(gameWidth - 55, 8, 'doneButton', doneCrates, this);
-
-
     },
-
-
 
     update: function () {
         //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!

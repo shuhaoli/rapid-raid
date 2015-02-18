@@ -14,6 +14,8 @@
 	<script src="js/Sscore.js"></script>
 	<script src="js/MplayerGame.js"></script>
 	<script src="js/Mscore.js"></script>
+	<script src="js/sCrate.js"></script>
+	<script src="js/mCrate.js"></script>
 	<script src="js/Settings.js"></script>
 	<script src="js/PausePanel.js"></script>
 </head>
@@ -37,8 +39,10 @@ window.onload = function() {
 	game.state.add('mInstructions', BasicGame.mInstructions);
 	game.state.add('sInstructions', BasicGame.sInstructions);
 	game.state.add('Selection', BasicGame.Selection);
+	game.state.add('SCrate', BasicGame.sCrate);
 	game.state.add('SplayerGame', BasicGame.SplayerGame);
 	game.state.add('Sscore', BasicGame.Sscore);
+	game.state.add('MCrate', BasicGame.mCrate);
 	game.state.add('MplayerGame', BasicGame.MplayerGame);
 	game.state.add('Mscore', BasicGame.Mscore);
 	game.state.add('Settings', BasicGame.Settings);

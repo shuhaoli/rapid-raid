@@ -25,7 +25,7 @@ BasicGame.Selection.prototype = {
 		if (sInstructions) {
 			this.state.start('sInstructions');
 		} else {
-			this.state.start('SplayerGame');
+			this.state.start('SCrate');
 		}
 	},
 
@@ -34,7 +34,7 @@ BasicGame.Selection.prototype = {
 		if (mInstructions) {
 			this.state.start('mInstructions');
 		} else {
-			this.state.start('MplayerGame');
+			this.state.start('MCrate');
 		}
 		
 	}

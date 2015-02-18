@@ -26,23 +26,89 @@ BasicGame.MplayerGame = function (game) {
 };
 
 BasicGame.MplayerGame.prototype = {
-
+// start game in paused state
     create: function () {
+        this.initMap();
+        this.initTurrets();
+    },
 
-        //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
+    // initializes the background, buttons and pause panel
+    initMap: function() {
+         // add background image
+        this.add.sprite(0,0,'background3');
+        
+        // add menu buttons
+        var buttonWidth = 60;
+        var buttonHeight = 20;
+        var ypos = scorebarHeight + gameHeight + (menubarHeight - buttonHeight)/2;
+        var xpos = gameWidth - buttonWidth;
 
+
+        // add pause button and set to invisible
+        this.pauseButton = this.add.button(xpos, ypos, 'pauseButton', this.pauseGame, this);
+
+        // add resume button and set to invisible
+        this.resumeButton = this.add.button(xpos, ypos, 'resumeButton', this.pauseGame, this);
+        this.resumeButton.visible = false;
+        this.paused = false;
+
+
+        // add pause panel
+        this.pausePanel = new PausePanel(this.game);
+        this.add.existing(this.pausePanel);
+    },
+
+    // initializes turrets
+    initTurrets: function() {
+        // add turrets with appropriate placement
+        var numTurrets = 16;
+        var tbspacing = 15;
+        var btwspacing = 14;
+        var turretSize = 32;
+
+
+        for (var i = 0; i < numTurrets; i++) {
+            if (i < numTurrets/2) {
+                this.add.sprite(0,scorebarHeight + i*(turretSize + btwspacing) + tbspacing, 'turretL');
+            }
+            else {
+                this.turret = this.add.sprite(gameWidth - 28, scorebarHeight + (i - numTurrets/2)*(turretSize + btwspacing) + tbspacing, 'turretR');
+            }
+        }
     },
 
     update: function () {
-
         //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
-
+        //if (!this.paused) 
+         //   this.turret.reset(Math.random()*gameWidth, Math.random()*gameHeight);
     },
 
-    quitGame: function (pointer) {
+    restartGame: function() {
+        this.state.start('SplayerGame');
+    },
 
-        //  Here you should destroy anything you no longer need.
-        //  Stop music, delete sprites, purge caches, free resources, all that good stuff.
+    // consider adding callback for resuming/pausing game in order to sync animation with actual pausing/resuming
+    pauseGame: function () {
+        if (!this.paused) {
+            this.paused = true;
+            // show pause panel
+            this.pausePanel.show();
+            // replace pause button with resume button
+            this.pauseButton.visible = false;
+            this.resumeButton.visible = true;
+        }
+        else {
+            this.paused = false;
+            // hide pause panel
+            this.pausePanel.hide();
+            // replace resume butotn with pause button
+            this.resumeButton.visible = false;
+            this.pauseButton.visible = true;
+        }
+    },
+
+
+    quitGame: function (pointer) {
 
         //  Then let's go back to the main menu.
         this.state.start('MainMenu');

@@ -36,7 +36,7 @@ BasicGame.mInstructions.prototype = {
 
 	goPlay: function (pointer) {
 		mInstructions = false;
-		this.state.start('MplayerGame');
+		this.state.start('MCrate');
 	},
 
 	goBack: function (pointer) {
