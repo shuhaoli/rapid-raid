@@ -29,20 +29,10 @@ BasicGame.Preloader.prototype = {
 		// this.load.audio('titleMusic', ['audio/main_menu.mp3']);
 		// this.load.bitmapFont('caslon', 'fonts/caslon.png', 'fonts/caslon.xml');
 		
-		// load game assets 
-		this.load.image('background', 'assets/background.png');	
-		this.load.image('crate', 'assets/crate.png');	
-		this.load.image('turret', 'assets/turret.png');	
-		this.load.image('pauseButton', 'assets/pauseButton.png');
-		this.load.image('resumeButton', 'assets/resumeButton.png');
-		this.load.image('quitButton', 'assets/quitButton.png');
-		this.load.image('restartButton', 'assets/restartButton.png');
-		this.load.image('pausePanel', 'assets/pausePanel.png')	
-
-		// load score assets
-		this.load.image('sscoreBackground', 'assets/sscoreBackground.png');
-		this.load.image('replayButton', 'assets/replayButton.png');
-		this.load.image('background', 'assets/background3.png');	
+		this.load.image('settingsButton', 'assets/settingsButton.png');
+		this.load.image('background1', 'assets/background1.png');
+		this.load.image('background2', 'assets/background2.png');
+		this.load.image('background3', 'assets/background3.png');	
 		this.load.image('crate', 'assets/darkcrate-32.png');	
 		this.load.image('turretL', 'assets/turretL.png');	
 		this.load.image('turretR', 'assets/turretR.png');	
@@ -51,7 +41,6 @@ BasicGame.Preloader.prototype = {
 		this.load.image('quitButton', 'assets/quitButton2.png');
 		this.load.image('restartButton', 'assets/restartButton2.png');
 		this.load.image('pausePanel', 'assets/pausePanel2.png')	
-		this.load.image('settingsButton', 'assets/settingsButton.png');
 		this.load.image('instructionsButton', 'assets/instructionsButton.png');
 		this.load.image('playButton', 'assets/playButton.png');
 		this.load.image('sPlayerButton', 'assets/sPlayerButton.png');
