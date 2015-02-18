@@ -49,6 +49,11 @@ BasicGame.Preloader.prototype = {
 		this.load.image('sInstructionBackground', 'assets/sInstructionBackgroundExample.png');
 		this.load.image('mInstructionBackground', 'assets/mInstructionBackgroundExample.png');
 		this.load.image('startButton', 'assets/startButton.png');
+		this.load.image('darkcrate-32', 'assets/darkcrate-32.png');
+		this.load.image('medcrate-24', 'assets/medcrate-24.png');
+		this.load.image('lightcrate-16', 'assets/lightcrate-16.png');
+		this.load.image('editButton', 'assets/editButton1.png');
+		this.load.image('doneButton', 'assets/doneButton1.png');
 	},
 
 	create: function () {
