@@ -31,32 +31,25 @@ BasicGame.MplayerGame = function (game) {
 };
 
 BasicGame.MplayerGame.prototype = {
-// start game in paused state
+    // start game in paused state
     create: function () {
-        this.initMap();
+        // add background image
+        this.add.sprite(0,0,'background3');
         this.initTurrets();
+        this.initCrates();
+        this.initMap();
+
         this.initBoudaries();
         this.initScore();
-
-        this.updateScore(123, true);
-        this.updateScore(321, false);
-
-        this.updateHp(true);
-        this.updateHp(false);
-        this.updateHp(true);
     },
 
     // initializes the background, buttons and pause panel
-    initMap: function() {
-         // add background image
-        this.add.sprite(0,0,'background3');
-        
-        // add menu buttons
+    initMap: function() {        
+        // add buttons
         var buttonWidth = 60;
         var buttonHeight = 20;
-        var ypos = scorebarHeight + gameHeight + (menubarHeight - buttonHeight)/2;
+        var ypos = scorebarHeight + gameHeight
         var xpos = gameWidth - buttonWidth;
-
 
          // add pause button
         this.pauseButton = this.add.button(xpos, ypos, 'smallButton', this.pauseGame, this);
@@ -95,6 +88,17 @@ BasicGame.MplayerGame.prototype = {
         }
     },
 
+    // initialize crates
+    initCrates: function() {
+        crates = this.add.group();
+        for (var i = 0; i < aplacedCrates.length; i++) {
+            var crateInfo = aplacedCrates[i];
+            var currentCrate = crates.create(crateInfo['x'], crateInfo['y'], crateInfo['key']);
+            currentCrate.anchor.setTo(0.5, 0.5);
+            crates.add(currentCrate);
+        }
+    },
+
     update: function () {
         //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
         //if (!this.paused) 
@@ -102,7 +106,7 @@ BasicGame.MplayerGame.prototype = {
     },
 
     restartGame: function() {
-        this.state.start('MplayerGame');
+        this.state.start('MCrate');
     },
 
     // consider adding callback for resuming/pausing game in order to sync animation with actual pausing/resuming
@@ -233,5 +237,4 @@ BasicGame.MplayerGame.prototype = {
     gameOver: function(side) {
         //!!! STUBBBBB
     }
-
 };

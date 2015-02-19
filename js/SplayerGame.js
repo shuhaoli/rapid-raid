@@ -31,22 +31,20 @@ BasicGame.SplayerGame = function (game) {
 BasicGame.SplayerGame.prototype = {
     // start game in paused state
     create: function () {
-        this.initMap();
+        // add background image
+        this.add.sprite(0,0,'background3');
         this.initTurrets();
+        this.initCrates();
+        this.initMap();
+
         this.initBoudaries();
         this.initScore();
 
-        this.updateScore(500);
 
-        this.updateHp();
-        this.updateHp();
     },
 
     // initializes the background, buttons and pause panel
-    initMap: function() {
-         // add background image
-        this.add.sprite(0,0,'background3');
-        
+    initMap: function() {        
         // add buttons
         var buttonWidth = 60;
         var buttonHeight = 20;
@@ -90,6 +88,17 @@ BasicGame.SplayerGame.prototype = {
         }
     },
 
+    // initialize crates
+    initCrates: function() {
+        crates = this.add.group();
+        for (var i = 0; i < aplacedCrates.length; i++) {
+            var crateInfo = aplacedCrates[i];
+            var currentCrate = crates.create(crateInfo['x'], crateInfo['y'], crateInfo['key']);
+            currentCrate.anchor.setTo(0.5, 0.5);
+            crates.add(currentCrate);
+        }
+    },
+
     update: function () {
         //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
         //if (!this.paused) 
@@ -97,7 +106,7 @@ BasicGame.SplayerGame.prototype = {
     },
 
     restartGame: function() {
-        this.state.start('SplayerGame');
+        this.state.start('SCrate');
     },
 
     // consider adding callback for resuming/pausing game in order to sync animation with actual pausing/resuming
@@ -129,7 +138,6 @@ BasicGame.SplayerGame.prototype = {
 
         //  Then let's go back to the main menu.
         this.state.start('MainMenu');
-
     },
 
     initBoudaries: function() {
@@ -201,6 +209,7 @@ BasicGame.SplayerGame.prototype = {
     gameOver: function() {
         //!!! STUBBBBB
     }
+
 
 };
 

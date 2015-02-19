@@ -1,6 +1,7 @@
 var crates;
 var placedCrates;
 var remainingCrates = [];
+var aplacedCrates = [];
 var selectedCrate;
 var walls;
 
@@ -46,9 +47,9 @@ BasicGame.sCrate.prototype = {
         var medButtonHeight = 40;
 
         // add edit button
-        this.editButton = this.add.button(gameWidth - medButtonWidth, 0, 'medButton', this.editCrates, this);
-        this.editButtonText = this.add.text(gameWidth - medButtonWidth, medButtonHeight/2, 'Edit', styleMed);        
-        this.editButtonText.anchor.setTo(-0.5, 0.35);
+        this.editButton = this.add.button(gameWidth - medButtonWidth, 0, 'medButton', this.doneCrates, this);
+        this.editButtonText = this.add.text(gameWidth - medButtonWidth, medButtonHeight/2, 'Done', styleMed);        
+        this.editButtonText.anchor.setTo(0, 0.35);
 
         // add add button
         this.addButton = this.add.button(gameWidth - medButtonWidth*2, 0, 'medButton', this.addCrate, this);
@@ -128,6 +129,8 @@ BasicGame.sCrate.prototype = {
             !this.physics.arcade.overlap(selectedCrate, walls)) {
             selectedCrate.body.velocity = 0;
             placedCrates.add(selectedCrate);
+            var crateInfo = {x: selectedCrate.x, y: selectedCrate.y, key: selectedCrate.key}
+            aplacedCrates.push(crateInfo);
             selectedCrate = null;
         }
     },
@@ -182,8 +185,6 @@ BasicGame.sCrate.prototype = {
         this.input.onDown.add(this.placeCrate, this);
     },
 
-    editCrates: function() {},
-
     initBoudaries: function() {
         walls = this.add.group();
 
@@ -210,6 +211,9 @@ BasicGame.sCrate.prototype = {
         bottomWall.enableBody = true;
         bottomWall.body.setSize(gameWidth, menubarHeight + 5, 0, 0);
         walls.add(bottomWall);
+    },
 
+    doneCrates: function() {
+        this.state.start('SplayerGame');
     }
 };
