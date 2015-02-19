@@ -1,4 +1,5 @@
 
+
 BasicGame.sInstructions = function (game) {
 
 	this.music = null;
@@ -14,16 +15,18 @@ BasicGame.sInstructions.prototype = {
         // add back button
         var buttonWidth = 60;
         var buttonHeight = 20;
+        var ypos = scorebarHeight + gameHeight
+        var xpos = gameWidth - buttonWidth;
 
         if (!this.fromMainMenu) {
-        	this.startButton = this.add.button(gameWidth - buttonWidth, gameHeight + menubarHeight + scorebarHeight - buttonHeight, 
-        		'startButton', this.goPlay, this); 
+        	this.startButton = this.add.button(xpos, ypos, 'smallButton', this.goPlay, this);
+        	this.startButtonText = this.add.text(xpos + buttonWidth/3, ypos + buttonHeight/2, "Start", styleSmall);
+        	this.startButtonText.anchor.setTo(0, 0.35);
     	} else {
-        	this.backButton = this.add.button(gameWidth - buttonWidth, gameHeight + menubarHeight + scorebarHeight - buttonHeight, 
-        		'backButton', this.goBack, this);
+        	this.backButton = this.add.button(0, ypos, 'smallButton', this.goBack, this);
+        	this.backButtonText = this.add.text(buttonWidth/6, ypos + buttonHeight/2, "Back", styleSmall);
+        	this.backButtonText.anchor.setTo(0, 0.35);
         }
-
-
 	},
 
 	update: function () {
@@ -43,5 +46,6 @@ BasicGame.sInstructions.prototype = {
 		this.state.start('MainMenu');
 		this.fromMainMenu = false;
 	}
+
 
 };

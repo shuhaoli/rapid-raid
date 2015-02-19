@@ -7,29 +7,27 @@ var PausePanel = function(game, parent){
 	this.panel = this.create(this.game.width/2, this.game.height/4, 'pausePanel');
 	this.panel.anchor.setTo(0.5, 0);
 
-	 // add quit button
-	 //this.quitButton = this.add.button(0, 0, 'quitButton', game.quitGame, this);        
+	// Add buttons
+	var buttonHeight = 20;
+	var buttonWidth = 60;
+	var panelHeight = 224;
+	var panelWidth = 352;
 
-	 //this.restartButton = this.add.button(20, 0, 'restartButton', this.restartGame, this);
+	var ypos = this.game.height/4 + panelHeight - buttonHeight
+	var xposHome = this.game.width/2 + panelWidth/2 - buttonWidth
+	var xposRestart = this.game.width/2 - panelWidth/2
 
+	this.homeButton = this.game.add.button(xposHome, ypos, 'smallButton', function(){this.game.state.getCurrentState().quitGame()}, this);
+    this.homeButtonText = this.game.add.text(xposHome + buttonWidth/3, ypos + buttonHeight/2, "Home", styleSmall);
+    this.homeButtonText.anchor.setTo(0, 0.35);
+	this.add(this.homeButton);
+	this.add(this.homeButtonText);
 
-	 // Add play button
-	 var buttonHeight = 20;
-	 var buttonWidth = 60;
-	 var panelHeight = 224;
-	 var panelWidth = 352;
-
-	this.quitButton = this.game.add.button(this.game.width/2 + panelWidth/2 - buttonWidth, this.game.height/4 + panelHeight - buttonHeight
-		, 'quitButton', function(){
-		this.game.state.getCurrentState().quitGame()}
-	, this);
-	this.add(this.quitButton);
-
-	 // Add play button
-	this.restartButton = this.game.add.button(this.game.width/2 - panelWidth/2, this.game.height/4 + panelHeight - buttonHeight
-		,'restartButton', function(){
-		game.state.getCurrentState().restartGame()}, this);
+	this.restartButton = this.game.add.button(xposRestart, ypos,'smallButton', function(){this.game.state.getCurrentState().restartGame()}, this);
+    this.restartButtonText = this.game.add.text(xposRestart + buttonWidth/6, ypos + buttonHeight/2, "Restart", styleSmall);
+    this.restartButtonText.anchor.setTo(0, 0.35);
 	this.add(this.restartButton);
+	this.add(this.restartButtonText);
 
 	// Place it out of bounds
 	this.x = 0;

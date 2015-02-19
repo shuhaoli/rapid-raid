@@ -21,23 +21,37 @@ BasicGame.sCrate.prototype = {
 
     // initializes the background, buttons and pause panel
     initMap: function() {
-       
-
-        // add menu buttons
+        // add buttons
         var buttonWidth = 60;
         var buttonHeight = 20;
-        var ypos = scorebarHeight + gameHeight + (menubarHeight - buttonHeight)/2;
+        var ypos = scorebarHeight + gameHeight
         var xpos = gameWidth - buttonWidth;
 
-
-        // add pause button and set to invisible
-        this.pauseButton = this.add.button(xpos, ypos, 'pauseButton', this.pauseGame, this);
+        // add pause button
+        this.pauseButton = this.add.button(xpos, ypos, 'smallButton', this.pauseGame, this);
+        this.pauseButtonText = this.add.text(xpos + buttonWidth/3, ypos + buttonHeight/2, "Pause", styleSmall);
+        this.pauseButtonText.anchor.setTo(0, 0.35);
 
         // add resume button and set to invisible
-        this.resumeButton = this.add.button(xpos, ypos, 'resumeButton', this.pauseGame, this);
-        this.resumeButton.visible = false;
+        this.playButton = this.add.button(xpos, ypos, 'smallButton', this.pauseGame, this);
+        this.playButtonText = this.add.text(xpos + buttonWidth/3, ypos + buttonHeight/2, "Play", styleSmall);
+        this.playButtonText.anchor.setTo(0, 0.35);
+        this.playButton.visible = false;
+        this.playButtonText.visible = false;
         this.paused = false;
 
+        var medButtonWidth = 50;
+        var medButtonHeight = 40;
+
+        // add edit button
+        this.editButton = this.add.button(gameWidth - medButtonWidth, 0, 'medButton', this.editCrates, this);
+        this.editButtonText = this.add.text(gameWidth - medButtonWidth, medButtonHeight/2, 'Edit', styleMed);        
+        this.editButtonText.anchor.setTo(0, 0.35);
+
+        // add add button
+        this.addButton = this.add.button(gameWidth - medButtonWidth*2, 0, 'medButton', this.addCrate, this);
+        this.addButtonText = this.add.text(gameWidth - medButtonWidth*2, medButtonHeight/2, 'Add', styleMed);
+        this.addButtonText.anchor.setTo(0, 0.35);
 
         // add pause panel
         this.pausePanel = new PausePanel(this.game);
@@ -68,8 +82,8 @@ BasicGame.sCrate.prototype = {
         this.physics.startSystem(Phaser.Physics.ARCADE);
 
         //Crate Implementation 
-        crates = this.add.group();
         placedCrates = this.add.group();
+        crates = this.add.group();
 
         var numCrates = 8;
         var currentCrate;
@@ -98,10 +112,6 @@ BasicGame.sCrate.prototype = {
 
         this.physics.arcade.enable(crates);
         crates.enableBody = true;
-
-        
-        this.editButton = this.add.button(gameWidth - 110, 8, 'editButton', this.addCrate, this);
-        this.doneButton = this.add.button(gameWidth - 55, 8, 'editButton', this.editCrates, this);   
     },
 
     placeCrate: function(pointer) {
@@ -160,23 +170,3 @@ BasicGame.sCrate.prototype = {
 
     editCrates: function() {}
 };
-
-// function startDrag(currentSprite) {
-//     currentSprite.body.moves = false;    
-// }
-
-
-// function stopDrag(currentSprite) {
-//     currentSprite.body.moves = true;
-//     //this.physics.arcade.overlap(currentSprite, sprites, function(){
-//     //    currentSprite.position.copyFrom(currentSprite.originalPosition);
-//     //});
-// }
-
-// function editCrates() {
-//     //!!!! this is a stub
-// }
-
-// function doneCrates() {
-//     //!!! this is a stub
-// }

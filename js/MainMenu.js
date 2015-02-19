@@ -22,7 +22,8 @@ BasicGame.MainMenu.prototype = {
 
 
         // add play button
-        this.playButton = this.add.button(170, 225, 'playButton', this.goPlay, this);
+        this.playButton = this.add.button(170, 225, 'selectionButton', this.goPlay, this);
+        this.playButtonText = this.add.text(170, 225, "Play", styleSelection);
 	},
 
 	update: function () {

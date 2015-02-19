@@ -5,6 +5,10 @@ var gameHeight = 384;
 var gameWidth = 512;
 var scorebarHeight = 40;
 var menubarHeight = 20;
+var styleSelection = { font: "24px Arial", fill: "#FFF" }
+var styleSmall = { font: "12px Arial", fill: "#FFF" }
+var styleMed = { font: "18px Arial", fill: "#FFF" }
+
 
 BasicGame.Boot = function (game) {
 
