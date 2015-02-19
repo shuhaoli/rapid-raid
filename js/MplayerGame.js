@@ -106,6 +106,7 @@ BasicGame.MplayerGame.prototype = {
     },
 
     restartGame: function() {
+        this.resetInfo();
         this.state.start('MCrate');
     },
 
@@ -236,5 +237,16 @@ BasicGame.MplayerGame.prototype = {
 
     gameOver: function(side) {
         //!!! STUBBBBB
+        this.resetInfo;
+    },
+
+    // call when game is ending (either restart/gameover)
+    // if any of this info is needed in a future state, remove from here
+    resetInfo: function() {
+        scoreBoxL = null;
+        scoreBoxR = null;
+        aplacedCrates = [];
+        hpL = [];
+        hpR = [];
     }
 };

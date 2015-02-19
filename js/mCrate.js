@@ -18,10 +18,10 @@ BasicGame.mCrate.prototype = {
     create: function () {
         // add background image
         this.add.sprite(0,0,'background3');
-        
         this.initTurrets();
         this.initCrates();
         this.initMap();
+        this.initBoudaries();
     },
 
     // initializes the background, buttons and pause panel
@@ -127,7 +127,8 @@ BasicGame.mCrate.prototype = {
     },
 
     placeCrate: function(pointer) {
-        if (selectedCrate != null && !this.physics.arcade.overlap(selectedCrate, placedCrates)) {
+        if (selectedCrate != null && !this.physics.arcade.overlap(selectedCrate, placedCrates) &&
+            !this.physics.arcade.overlap(selectedCrate, walls)) {
             selectedCrate.body.velocity = 0;
             placedCrates.add(selectedCrate);
             var crateInfo = {x: selectedCrate.x, y: selectedCrate.y, key: selectedCrate.key}
@@ -144,7 +145,8 @@ BasicGame.mCrate.prototype = {
     },
 
     restartGame: function() {
-        this.state.start('SCrate');
+        this.resetInfo();
+        this.state.start('MCrate');
     },
 
     // consider adding callback for resuming/pausing game in order to sync animation with actual pausing/resuming
@@ -182,10 +184,11 @@ BasicGame.mCrate.prototype = {
     },
 
     addCrate: function() {
-        selectedCrate = remainingCrates.pop();
-        this.input.onDown.add(this.placeCrate, this);
+        if (selectedCrate == null) {
+            selectedCrate = remainingCrates.pop();
+            this.input.onDown.add(this.placeCrate, this);
+        }
     },
-
 
     initBoudaries: function() {
         walls = this.add.group();
@@ -216,7 +219,15 @@ BasicGame.mCrate.prototype = {
     },
 
     doneCrates: function() {
-        this.state.start('MplayerGame');
+        if (selectedCrate == null) {
+           this.state.start('MplayerGame');
+       }
+    },
+
+    resetInfo: function() {
+        remainingCrates = [];
+        selectedCrate = null;
+        aplacedCrates = [];
     }
 };
 

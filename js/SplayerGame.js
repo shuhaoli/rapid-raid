@@ -36,11 +36,8 @@ BasicGame.SplayerGame.prototype = {
         this.initTurrets();
         this.initCrates();
         this.initMap();
-
         this.initBoudaries();
         this.initScore();
-
-
     },
 
     // initializes the background, buttons and pause panel
@@ -99,47 +96,6 @@ BasicGame.SplayerGame.prototype = {
         }
     },
 
-    update: function () {
-        //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
-        //if (!this.paused) 
-         //   this.turret.reset(Math.random()*gameWidth, Math.random()*gameHeight);
-    },
-
-    restartGame: function() {
-        this.state.start('SCrate');
-    },
-
-    // consider adding callback for resuming/pausing game in order to sync animation with actual pausing/resuming
-    pauseGame: function () {
-        if (!this.paused) {
-            this.paused = true;
-            // show pause panel
-            this.pausePanel.show();
-            // replace pause button with resume button
-            this.pauseButton.visible = false;
-            this.pauseButtonText.visible = false;
-            this.playButton.visible = true;
-            this.playButtonText.visible = true;
-        }
-        else {
-            this.paused = false;
-            // hide pause panel
-            this.pausePanel.hide();
-            // replace resume butotn with pause button
-            this.playButton.visible = false;
-            this.playButtonText.visible = false;
-            this.pauseButton.visible = true;
-            this.pauseButtonText.visible = true;
-        }
-    },
-
-
-    quitGame: function (pointer) {
-
-        //  Then let's go back to the main menu.
-        this.state.start('MainMenu');
-    },
-
     initBoudaries: function() {
         walls = this.add.group();
 
@@ -189,6 +145,47 @@ BasicGame.SplayerGame.prototype = {
   
     },
 
+    update: function () {
+        //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
+        //if (!this.paused) 
+         //   this.turret.reset(Math.random()*gameWidth, Math.random()*gameHeight);
+    },
+
+    restartGame: function() {
+        this.resetInfo();
+        this.state.start('SCrate');
+    },
+
+    // consider adding callback for resuming/pausing game in order to sync animation with actual pausing/resuming
+    pauseGame: function () {
+        if (!this.paused) {
+            this.paused = true;
+            // show pause panel
+            this.pausePanel.show();
+            // replace pause button with resume button
+            this.pauseButton.visible = false;
+            this.pauseButtonText.visible = false;
+            this.playButton.visible = true;
+            this.playButtonText.visible = true;
+        }
+        else {
+            this.paused = false;
+            // hide pause panel
+            this.pausePanel.hide();
+            // replace resume butotn with pause button
+            this.playButton.visible = false;
+            this.playButtonText.visible = false;
+            this.pauseButton.visible = true;
+            this.pauseButtonText.visible = true;
+        }
+    },
+
+
+    quitGame: function (pointer) {
+        this.resetInfo();
+        this.state.start('MainMenu');
+    },
+
     //true - left false - right
     updateScore: function(number) {
         scoreBox.destroy();
@@ -208,6 +205,15 @@ BasicGame.SplayerGame.prototype = {
 
     gameOver: function() {
         //!!! STUBBBBB
+        this.resetInfo();
+    },
+
+    // call when game is ending (either restart/gameover)
+    // if any of this info is needed in a future state, remove from here
+    resetInfo: function() {
+        scoreBox = null;
+        hp = [];
+        aplacedCrates = [];
     }
 
 

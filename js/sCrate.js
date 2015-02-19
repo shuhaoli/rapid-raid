@@ -15,7 +15,6 @@ BasicGame.sCrate.prototype = {
     create: function () {
         // add background image
         this.add.sprite(0,0,'background3');
-        
         this.initTurrets();
         this.initCrates();
         this.initMap();
@@ -143,6 +142,7 @@ BasicGame.sCrate.prototype = {
     },
 
     restartGame: function() {
+        this.resetInfo();
         this.state.start('SCrate');
     },
 
@@ -181,8 +181,10 @@ BasicGame.sCrate.prototype = {
     },
 
     addCrate: function() {
-        selectedCrate = remainingCrates.pop();
-        this.input.onDown.add(this.placeCrate, this);
+        if (selectedCrate == null) {
+            selectedCrate = remainingCrates.pop();
+            this.input.onDown.add(this.placeCrate, this);
+        }
     },
 
     initBoudaries: function() {
@@ -214,6 +216,14 @@ BasicGame.sCrate.prototype = {
     },
 
     doneCrates: function() {
-        this.state.start('SplayerGame');
+        if (selectedCrate == null) {
+           this.state.start('SplayerGame');
+       }
+    },
+
+    resetInfo: function() {
+        remainingCrates = [];
+        selectedCrate = null;
+        aplacedCrates = [];
     }
 };
