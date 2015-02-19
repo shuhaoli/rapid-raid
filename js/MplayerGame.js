@@ -1,6 +1,8 @@
 var walls;
 var scoreBoxL;
 var scoreBoxR;
+var scoreL = 0;
+var scoreR = 0;
 var hpL = [];
 var hpR = [];
 
@@ -41,6 +43,7 @@ BasicGame.MplayerGame.prototype = {
 
         this.initBoudaries();
         this.initScore();
+
     },
 
     // initializes the background, buttons and pause panel
@@ -206,17 +209,16 @@ BasicGame.MplayerGame.prototype = {
   
     },
 
+
     //true - left false - right
     updateScore: function(number, side) {
         if (side) {
-            scoreBoxL.destroy();
-            scoreBoxL = this.add.text(86, 5, number, styleMed);
-            scoreBoxL.anchor.setTo(1, 0);
+            scoreL += number;
+            scoreBoxL.setText(scoreL);
         }
         else {
-            scoreBoxR.destroy();
-            scoreBoxR = this.add.text(gameWidth - 40, 5, number, styleMed);
-            scoreBoxR.anchor.setTo(1, 0);
+            scoreR += number;
+            scoreBoxR.setText(scoreR);
         }
     },
 
@@ -236,5 +238,6 @@ BasicGame.MplayerGame.prototype = {
 
     gameOver: function(side) {
         //!!! STUBBBBB
+        this.state.start('Mscore');
     }
 };

@@ -1,5 +1,6 @@
 var walls;
 var scoreBox;
+var score = 0;
 var hp = [];
 
 BasicGame.SplayerGame = function (game) {
@@ -191,10 +192,8 @@ BasicGame.SplayerGame.prototype = {
 
     //true - left false - right
     updateScore: function(number) {
-        scoreBox.destroy();
-        scoreBox = this.add.text(86, 5, number, styleMed);
-        scoreBox.anchor.setTo(1, 0);
-    
+        score += number;
+        scoreBox.setText(score);
     },
 
     //true - left false - right
@@ -208,6 +207,7 @@ BasicGame.SplayerGame.prototype = {
 
     gameOver: function() {
         //!!! STUBBBBB
+        this.state.start('Sscore');
     }
 
 

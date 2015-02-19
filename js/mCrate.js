@@ -22,6 +22,7 @@ BasicGame.mCrate.prototype = {
         this.initTurrets();
         this.initCrates();
         this.initMap();
+
     },
 
     // initializes the background, buttons and pause panel
