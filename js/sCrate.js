@@ -1,4 +1,5 @@
 var crates;
+var placedCrates;
 var remainingCrates = [];
 var selectedCrate;
 
@@ -64,8 +65,11 @@ BasicGame.sCrate.prototype = {
 
     // initializes crates/crate placement bar
     initCrates: function() {        
+        this.physics.startSystem(Phaser.Physics.ARCADE);
+
         //Crate Implementation 
         crates = this.add.group();
+        placedCrates = this.add.group();
 
         var numCrates = 8;
         var currentCrate;
@@ -92,17 +96,19 @@ BasicGame.sCrate.prototype = {
             crates.add(currentCrate);
         }
 
-        this.physics.startSystem(Phaser.Physics.ARCADE);
+        this.physics.arcade.enable(crates);
+        crates.enableBody = true;
+
         
         this.editButton = this.add.button(gameWidth - 110, 8, 'editButton', this.addCrate, this);
         this.doneButton = this.add.button(gameWidth - 55, 8, 'editButton', this.editCrates, this);   
     },
 
     placeCrate: function(pointer) {
-        if (selectedCrate != null) {
+        if (selectedCrate != null && !this.physics.arcade.overlap(selectedCrate, placedCrates)) {
             selectedCrate.body.velocity = 0;
+            placedCrates.add(selectedCrate);
             selectedCrate = null;
-            // this.input.onDown.removeAll();
         }
     },
 
@@ -149,7 +155,6 @@ BasicGame.sCrate.prototype = {
 
     addCrate: function() {
         selectedCrate = remainingCrates.pop();
-        this.physics.enable(selectedCrate, Phaser.Physics.ARCADE);
         this.input.onDown.add(this.placeCrate, this);
     },
 
