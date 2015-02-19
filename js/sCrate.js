@@ -65,7 +65,7 @@ BasicGame.sCrate.prototype = {
         this.addButtonText.anchor.setTo(-0.5, 0.35);
 
         // add timer text
-        this.timerText = this.add.text(gameWidth/2 - medButtonWidth/2, (gameHeight + scorebarHeight + menubarHeight) - medButtonHeight/2, timer.duration.toFixed(0)/1000, styleMed);
+        this.timerText = this.add.text(gameWidth/2 - medButtonWidth/8, (gameHeight + scorebarHeight + menubarHeight) - medButtonHeight/2, timer.duration.toFixed(0)/1000, styleMed);
 
         // add pause panel
         this.pausePanel = new PausePanel(this.game);
@@ -169,7 +169,7 @@ BasicGame.sCrate.prototype = {
             // 60 is default speed, 50 is 50 ms time requirement
             this.physics.arcade.moveToPointer(selectedCrate, 60, this.input.activePointer, 50);
         }
-        this.timerText.text = timer.duration.toFixed(0)/1000;
+        this.timerText.text = Math.floor((timer.duration.toFixed(0)/100))/10;
     },
 
     restartGame: function() {
