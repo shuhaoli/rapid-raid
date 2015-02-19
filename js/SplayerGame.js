@@ -27,15 +27,15 @@ BasicGame.SplayerGame = function (game) {
 BasicGame.SplayerGame.prototype = {
     // start game in paused state
     create: function () {
-        this.initMap();
+        // add background image
+        this.add.sprite(0,0,'background3');
         this.initTurrets();
+        this.initCrates();
+        this.initMap();
     },
 
     // initializes the background, buttons and pause panel
-    initMap: function() {
-         // add background image
-        this.add.sprite(0,0,'background3');
-        
+    initMap: function() {        
         // add buttons
         var buttonWidth = 60;
         var buttonHeight = 20;
@@ -76,6 +76,17 @@ BasicGame.SplayerGame.prototype = {
             else {
                 this.turret = this.add.sprite(gameWidth - 28, scorebarHeight + (i - numTurrets/2)*(turretSize + btwspacing) + tbspacing, 'turretR');
             }
+        }
+    },
+
+    // initialize crates
+    initCrates: function() {
+        crates = this.add.group();
+        for (var i = 0; i < aplacedCrates.length; i++) {
+            var crateInfo = aplacedCrates[i];
+            var currentCrate = crates.create(crateInfo['x'], crateInfo['y'], crateInfo['key']);
+            currentCrate.anchor.setTo(0.5, 0.5);
+            crates.add(currentCrate);
         }
     },
 
@@ -120,8 +131,6 @@ BasicGame.SplayerGame.prototype = {
         this.state.start('MainMenu');
 
     }
-
-
 };
 
 

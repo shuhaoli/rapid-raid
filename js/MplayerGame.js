@@ -26,32 +26,35 @@ BasicGame.MplayerGame = function (game) {
 };
 
 BasicGame.MplayerGame.prototype = {
-// start game in paused state
+    // start game in paused state
     create: function () {
-        this.initMap();
+        // add background image
+        this.add.sprite(0,0,'background3');
         this.initTurrets();
+        this.initCrates();
+        this.initMap();
     },
 
     // initializes the background, buttons and pause panel
-    initMap: function() {
-         // add background image
-        this.add.sprite(0,0,'background3');
-        
-        // add menu buttons
+    initMap: function() {        
+        // add buttons
         var buttonWidth = 60;
         var buttonHeight = 20;
-        var ypos = scorebarHeight + gameHeight + (menubarHeight - buttonHeight)/2;
+        var ypos = scorebarHeight + gameHeight
         var xpos = gameWidth - buttonWidth;
 
-
-        // add pause button and set to invisible
-        this.pauseButton = this.add.button(xpos, ypos, 'pauseButton', this.pauseGame, this);
+        // add pause button
+        this.pauseButton = this.add.button(xpos, ypos, 'smallButton', this.pauseGame, this);
+        this.pauseButtonText = this.add.text(xpos + buttonWidth/3, ypos + buttonHeight/2, "Pause", styleSmall);
+        this.pauseButtonText.anchor.setTo(0, 0.35);
 
         // add resume button and set to invisible
-        this.resumeButton = this.add.button(xpos, ypos, 'resumeButton', this.pauseGame, this);
-        this.resumeButton.visible = false;
+        this.playButton = this.add.button(xpos, ypos, 'smallButton', this.pauseGame, this);
+        this.playButtonText = this.add.text(xpos + buttonWidth/3, ypos + buttonHeight/2, "Play", styleSmall);
+        this.playButtonText.anchor.setTo(0, 0.35);
+        this.playButton.visible = false;
+        this.playButtonText.visible = false;
         this.paused = false;
-
 
         // add pause panel
         this.pausePanel = new PausePanel(this.game);
@@ -77,6 +80,17 @@ BasicGame.MplayerGame.prototype = {
         }
     },
 
+    // initialize crates
+    initCrates: function() {
+        crates = this.add.group();
+        for (var i = 0; i < aplacedCrates.length; i++) {
+            var crateInfo = aplacedCrates[i];
+            var currentCrate = crates.create(crateInfo['x'], crateInfo['y'], crateInfo['key']);
+            currentCrate.anchor.setTo(0.5, 0.5);
+            crates.add(currentCrate);
+        }
+    },
+
     update: function () {
         //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
         //if (!this.paused) 
@@ -95,15 +109,19 @@ BasicGame.MplayerGame.prototype = {
             this.pausePanel.show();
             // replace pause button with resume button
             this.pauseButton.visible = false;
-            this.resumeButton.visible = true;
+            this.pauseButtonText.visible = false;
+            this.playButton.visible = true;
+            this.playButtonText.visible = true;
         }
         else {
             this.paused = false;
             // hide pause panel
             this.pausePanel.hide();
             // replace resume butotn with pause button
-            this.resumeButton.visible = false;
+            this.playButton.visible = false;
+            this.playButtonText.visible = false;
             this.pauseButton.visible = true;
+            this.pauseButtonText.visible = true;
         }
     },
 
@@ -114,5 +132,4 @@ BasicGame.MplayerGame.prototype = {
         this.state.start('MainMenu');
 
     }
-
 };
