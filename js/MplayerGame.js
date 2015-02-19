@@ -1,3 +1,8 @@
+var walls;
+var scoreBoxL;
+var scoreBoxR;
+var hpL = [];
+var hpR = [];
 
 BasicGame.MplayerGame = function (game) {
 
@@ -30,6 +35,15 @@ BasicGame.MplayerGame.prototype = {
     create: function () {
         this.initMap();
         this.initTurrets();
+        this.initBoudaries();
+        this.initScore();
+
+        this.updateScore(123, true);
+        this.updateScore(321, false);
+
+        this.updateHp(true);
+        this.updateHp(false);
+        this.updateHp(true);
     },
 
     // initializes the background, buttons and pause panel
@@ -44,14 +58,18 @@ BasicGame.MplayerGame.prototype = {
         var xpos = gameWidth - buttonWidth;
 
 
-        // add pause button and set to invisible
-        this.pauseButton = this.add.button(xpos, ypos, 'pauseButton', this.pauseGame, this);
+         // add pause button
+        this.pauseButton = this.add.button(xpos, ypos, 'smallButton', this.pauseGame, this);
+        this.pauseButtonText = this.add.text(xpos + buttonWidth/3, ypos + buttonHeight/2, "Pause", styleSmall);
+        this.pauseButtonText.anchor.setTo(0, 0.35);
 
         // add resume button and set to invisible
-        this.resumeButton = this.add.button(xpos, ypos, 'resumeButton', this.pauseGame, this);
-        this.resumeButton.visible = false;
+        this.playButton = this.add.button(xpos, ypos, 'smallButton', this.pauseGame, this);
+        this.playButtonText = this.add.text(xpos + buttonWidth/3, ypos + buttonHeight/2, "Play", styleSmall);
+        this.playButtonText.anchor.setTo(0, 0.35);
+        this.playButton.visible = false;
+        this.playButtonText.visible = false;
         this.paused = false;
-
 
         // add pause panel
         this.pausePanel = new PausePanel(this.game);
@@ -84,7 +102,7 @@ BasicGame.MplayerGame.prototype = {
     },
 
     restartGame: function() {
-        this.state.start('SplayerGame');
+        this.state.start('MplayerGame');
     },
 
     // consider adding callback for resuming/pausing game in order to sync animation with actual pausing/resuming
@@ -95,15 +113,19 @@ BasicGame.MplayerGame.prototype = {
             this.pausePanel.show();
             // replace pause button with resume button
             this.pauseButton.visible = false;
-            this.resumeButton.visible = true;
+            this.pauseButtonText.visible = false;
+            this.playButton.visible = true;
+            this.playButtonText.visible = true;
         }
         else {
             this.paused = false;
             // hide pause panel
             this.pausePanel.hide();
             // replace resume butotn with pause button
-            this.resumeButton.visible = false;
+            this.playButton.visible = false;
+            this.playButtonText.visible = false;
             this.pauseButton.visible = true;
+            this.pauseButtonText.visible = true;
         }
     },
 
@@ -113,6 +135,103 @@ BasicGame.MplayerGame.prototype = {
         //  Then let's go back to the main menu.
         this.state.start('MainMenu');
 
+    },
+
+    initBoudaries: function() {
+        walls = this.add.group();
+
+        leftWall = this.add.sprite(0, scorebarHeight);
+        this.physics.arcade.enable(leftWall);
+        leftWall.enableBody = true;
+        leftWall.body.setSize(28, gameHeight, 0, 0);
+        walls.add(leftWall);
+
+        rightWall = this.add.sprite(gameWidth - 28, scorebarHeight);
+        this.physics.arcade.enable(rightWall);
+        rightWall.enableBody = true;
+        rightWall.body.setSize(28, gameHeight, 0, 0);
+        walls.add(rightWall);
+
+        topWall = this.add.sprite(0, 0);
+        this.physics.arcade.enable(topWall);
+        topWall.enableBody = true;
+        topWall.body.setSize(gameWidth, scorebarHeight + 5, 0, 0);
+        walls.add(topWall);
+
+        bottomWall = this.add.sprite(0, scorebarHeight + gameHeight - 5);
+        this.physics.arcade.enable(bottomWall);
+        bottomWall.enableBody = true;
+        bottomWall.body.setSize(gameWidth, menubarHeight + 5, 0, 0);
+        walls.add(bottomWall);
+
+    },
+
+    //true - left false - right
+    initScore: function() {
+        this.initScoreSide(true);
+        this.initScoreSide(false);
+    },
+
+    initScoreSide: function(side) {
+        var xpos;
+        var ypos = 25;
+        var hpSpacing = 12;
+        var hpStart = 4;
+        var currenthp;
+
+        if (side) {
+            xpos = 40 + 12*3;
+            this.add.sprite(5, 5, 'player');
+            scoreBoxL = this.add.text(80, 5, "0", styleMed);
+            scoreBoxL.anchor.setTo(1, 0);
+        } else {
+            xpos = gameWidth - 40 - 12;
+            this.add.sprite(gameWidth - 35, 5, 'player');
+            scoreBoxR = this.add.text(gameWidth - 40, 5, "0", styleMed);
+            scoreBoxR.anchor.setTo(1, 0);
+        }
+
+        for (i = 0; i < hpStart; i++) {
+            currentHp = this.add.sprite(xpos - i*hpSpacing, ypos, 'hp');
+            if (side) {
+                hpL.push(currentHp);
+            } else {
+                hpR.push(currentHp);
+            }
+        }
+  
+    },
+
+    //true - left false - right
+    updateScore: function(number, side) {
+        if (side) {
+            scoreBoxL.destroy();
+            scoreBoxL = this.add.text(86, 5, number, styleMed);
+            scoreBoxL.anchor.setTo(1, 0);
+        }
+        else {
+            scoreBoxR.destroy();
+            scoreBoxR = this.add.text(gameWidth - 40, 5, number, styleMed);
+            scoreBoxR.anchor.setTo(1, 0);
+        }
+    },
+
+    //true - left false - right
+    updateHp: function(side) {
+        var currenthp;
+        if (side && (hpL.length != 0)) {
+            currenthp = hpL.pop();
+            currenthp.destroy();
+        } else if (!side && (hpR.length != 0)) {
+            currenthp = hpR.pop();
+            currenthp.destroy();
+        } else {
+            this.gameOver(side);
+        }
+    },
+
+    gameOver: function(side) {
+        //!!! STUBBBBB
     }
 
 };

@@ -1,3 +1,7 @@
+var walls;
+var scoreBox;
+var hp = [];
+
 BasicGame.SplayerGame = function (game) {
 
     //  When a State is added to Phaser it automatically has the following properties set on it, even if they already exist:
@@ -29,6 +33,13 @@ BasicGame.SplayerGame.prototype = {
     create: function () {
         this.initMap();
         this.initTurrets();
+        this.initBoudaries();
+        this.initScore();
+
+        this.updateScore(500);
+
+        this.updateHp();
+        this.updateHp();
     },
 
     // initializes the background, buttons and pause panel
@@ -119,8 +130,77 @@ BasicGame.SplayerGame.prototype = {
         //  Then let's go back to the main menu.
         this.state.start('MainMenu');
 
-    }
+    },
 
+    initBoudaries: function() {
+        walls = this.add.group();
+
+        leftWall = this.add.sprite(0, scorebarHeight);
+        this.physics.arcade.enable(leftWall);
+        leftWall.enableBody = true;
+        leftWall.body.setSize(28, gameHeight, 0, 0);
+        walls.add(leftWall);
+
+        rightWall = this.add.sprite(gameWidth - 28, scorebarHeight);
+        this.physics.arcade.enable(rightWall);
+        rightWall.enableBody = true;
+        rightWall.body.setSize(28, gameHeight, 0, 0);
+        walls.add(rightWall);
+
+        topWall = this.add.sprite(0, 0);
+        this.physics.arcade.enable(topWall);
+        topWall.enableBody = true;
+        topWall.body.setSize(gameWidth, scorebarHeight + 5, 0, 0);
+        walls.add(topWall);
+
+        bottomWall = this.add.sprite(0, scorebarHeight + gameHeight - 5);
+        this.physics.arcade.enable(bottomWall);
+        bottomWall.enableBody = true;
+        bottomWall.body.setSize(gameWidth, menubarHeight + 5, 0, 0);
+        walls.add(bottomWall);
+
+    },
+
+
+    initScore: function() {
+        var xpos = 40 + 12*3;
+        var ypos = 25;
+        var hpSpacing = 12;
+        var hpStart = 4;
+        var currenthp;
+
+
+        this.add.sprite(5, 5, 'player');
+        scoreBox = this.add.text(86, 5, "0", styleMed);
+        scoreBox.anchor.setTo(1, 0);
+
+        for (i = 0; i < hpStart; i++) {
+            currenthp = this.add.sprite(xpos - i*hpSpacing, ypos, 'hp');
+            hp.push(currenthp);
+        }
+  
+    },
+
+    //true - left false - right
+    updateScore: function(number) {
+        scoreBox.destroy();
+        scoreBox = this.add.text(86, 5, number, styleMed);
+        scoreBox.anchor.setTo(1, 0);
+    
+    },
+
+    //true - left false - right
+    updateHp: function() {
+        if (hp.length != 0) {
+            hp.pop().destroy();
+        } else {
+            this.gameOver();
+        }
+    },
+
+    gameOver: function() {
+        //!!! STUBBBBB
+    }
 
 };
 

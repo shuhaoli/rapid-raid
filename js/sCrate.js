@@ -2,6 +2,7 @@ var crates;
 var placedCrates;
 var remainingCrates = [];
 var selectedCrate;
+var walls;
 
 
 BasicGame.sCrate = function (game) {
@@ -17,6 +18,7 @@ BasicGame.sCrate.prototype = {
         this.initTurrets();
         this.initCrates();
         this.initMap();
+        this.initBoudaries();
     },
 
     // initializes the background, buttons and pause panel
@@ -40,18 +42,18 @@ BasicGame.sCrate.prototype = {
         this.playButtonText.visible = false;
         this.paused = false;
 
-        var medButtonWidth = 50;
+        var medButtonWidth = 60;
         var medButtonHeight = 40;
 
         // add edit button
         this.editButton = this.add.button(gameWidth - medButtonWidth, 0, 'medButton', this.editCrates, this);
         this.editButtonText = this.add.text(gameWidth - medButtonWidth, medButtonHeight/2, 'Edit', styleMed);        
-        this.editButtonText.anchor.setTo(0, 0.35);
+        this.editButtonText.anchor.setTo(-0.5, 0.35);
 
         // add add button
         this.addButton = this.add.button(gameWidth - medButtonWidth*2, 0, 'medButton', this.addCrate, this);
         this.addButtonText = this.add.text(gameWidth - medButtonWidth*2, medButtonHeight/2, 'Add', styleMed);
-        this.addButtonText.anchor.setTo(0, 0.35);
+        this.addButtonText.anchor.setTo(-0.5, 0.35);
 
         // add pause panel
         this.pausePanel = new PausePanel(this.game);
@@ -94,12 +96,19 @@ BasicGame.sCrate.prototype = {
         for (i = 0; i < numCrates; i++) {
             var randSelection = Math.floor((Math.random() * 3));
             var crateImage;
-            if (randSelection == 0){
-                crateImage = "darkcrate-32";
-            } else if (randSelection == 1) {
-                crateImage = "medcrate-24";
-            } else {
-                crateImage = "lightcrate-16";
+            switch(randSelection){
+                case 0:
+                    crateImage = "darkcrate-32";
+                    break;
+                case 1:
+                    crateImage = "medcrate-24";
+                    break;
+                case 2:
+                    crateImage = "lightcrate-16";
+                    break;
+                default:
+                    crateImage = "darkcrate-32";
+                    break;
             }
 
             currentCrate = crates.create(xposCrateInit + i*xSpacing, yposCrateInit, crateImage);
@@ -115,7 +124,8 @@ BasicGame.sCrate.prototype = {
     },
 
     placeCrate: function(pointer) {
-        if (selectedCrate != null && !this.physics.arcade.overlap(selectedCrate, placedCrates)) {
+        if (selectedCrate != null && !this.physics.arcade.overlap(selectedCrate, placedCrates) &&
+            !this.physics.arcade.overlap(selectedCrate, walls)) {
             selectedCrate.body.velocity = 0;
             placedCrates.add(selectedCrate);
             selectedCrate = null;
@@ -141,15 +151,19 @@ BasicGame.sCrate.prototype = {
             this.pausePanel.show();
             // replace pause button with resume button
             this.pauseButton.visible = false;
-            this.resumeButton.visible = true;
+            this.pauseButtonText.visible = false;
+            this.playButton.visible = true;
+            this.playButtonText.visible = true;
         }
         else {
             this.paused = false;
             // hide pause panel
             this.pausePanel.hide();
             // replace resume butotn with pause button
-            this.resumeButton.visible = false;
+            this.playButton.visible = false;
+            this.playButtonText.visible = false;
             this.pauseButton.visible = true;
+            this.pauseButtonText.visible = true;
         }
     },
 
@@ -168,5 +182,34 @@ BasicGame.sCrate.prototype = {
         this.input.onDown.add(this.placeCrate, this);
     },
 
-    editCrates: function() {}
+    editCrates: function() {},
+
+    initBoudaries: function() {
+        walls = this.add.group();
+
+        leftWall = this.add.sprite(0, scorebarHeight);
+        this.physics.arcade.enable(leftWall);
+        leftWall.enableBody = true;
+        leftWall.body.setSize(28, gameHeight, 0, 0);
+        walls.add(leftWall);
+
+        rightWall = this.add.sprite(gameWidth - 28, scorebarHeight);
+        this.physics.arcade.enable(rightWall);
+        rightWall.enableBody = true;
+        rightWall.body.setSize(28, gameHeight, 0, 0);
+        walls.add(rightWall);
+
+        topWall = this.add.sprite(0, 0);
+        this.physics.arcade.enable(topWall);
+        topWall.enableBody = true;
+        topWall.body.setSize(gameWidth, scorebarHeight + 5, 0, 0);
+        walls.add(topWall);
+
+        bottomWall = this.add.sprite(0, scorebarHeight + gameHeight - 5);
+        this.physics.arcade.enable(bottomWall);
+        bottomWall.enableBody = true;
+        bottomWall.body.setSize(gameWidth, menubarHeight + 5, 0, 0);
+        walls.add(bottomWall);
+
+    }
 };

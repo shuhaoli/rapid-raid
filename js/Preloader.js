@@ -47,6 +47,8 @@ BasicGame.Preloader.prototype = {
 		this.load.image('selectionButton', 'assets/selectionButton2.png');
 		this.load.image('smallButton', 'assets/smallButton.png');
 		this.load.image('medButton', 'assets/medButton.png');
+		this.load.image('hp', 'assets/hpbar.png');
+		this.load.image('player', 'assets/playerIcon1.png');
 
 	},
 
