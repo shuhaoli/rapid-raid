@@ -6,9 +6,7 @@ var scoreR = 0;
 var hpL = [];
 var hpR = [];
 var gameStarted;
-var gameOver;
 var startEndText;
-var timeCheck;
 
 BasicGame.MplayerGame = function (game) {
 
@@ -41,21 +39,12 @@ BasicGame.MplayerGame.prototype = {
     create: function () {
         this.physics.startSystem(Phaser.Physics.ARCADE);
         this.add.sprite(0,0,'backgroundGame');
-
-        gameStarted = false;
-        gameOver = false;
-        this.input.keyboard.addCallbacks(null, null, this.onKeyUp);
-
         this.initKeyInput();
         this.initTurrets();
         this.initCrates();
         this.initSprites();
         this.initBoudaries();
         this.initScore();
-
-        startEndText = this.add.text(gameWidth/2, gameHeight/2, "Press Space Bar to Begin", styleSelection);
-        startEndText.anchor.setTo(0.5, 0.5);
-
         this.initMap();
     },
 
@@ -71,7 +60,11 @@ BasicGame.MplayerGame.prototype = {
     },
 
     // initializes the background, buttons and pause panel
-    initMap: function() {        
+    initMap: function() {
+        gameStarted = false;
+        startEndText = this.add.text(gameWidth/2, gameHeight/2, "Press Any Key to Begin", styleSelection);
+        this.input.keyboard.addCallbacks(this, this.onKeyDown);
+        startEndText.anchor.setTo(0.5, 0.5);    
         // add buttons
         var buttonWidth = 60;
         var buttonHeight = 20;
@@ -183,46 +176,49 @@ BasicGame.MplayerGame.prototype = {
 
     },
 
-    //true - left false - right
     initScore: function() {
-        this.initScoreSide(true);
-        this.initScoreSide(false);
+        this.initLeftScore();
+        this.initRightScore();
     },
 
-    initScoreSide: function(side) {
+    initLeftScore: function() {
         var xpos;
         var ypos = 25;
         var hpSpacing = 12;
         var hpStart = 4;
         var currenthp;
 
-        if (side) {
-            xpos = 40 + 12*3;
-            this.add.sprite(5, 5, 'player');
-            scoreBoxL = this.add.text(80, 5, "0", styleMed);
-            scoreBoxL.anchor.setTo(1, 0);
-        } else {
-            xpos = gameWidth - 40 - 12;
-            this.add.sprite(gameWidth - 35, 5, 'player');
-            scoreBoxR = this.add.text(gameWidth - 40, 5, "0", styleMed);
-            scoreBoxR.anchor.setTo(1, 0);
-        }
+        xpos = 40 + 12*3;
+        this.add.sprite(5, 5, 'player');
+        scoreBoxL = this.add.text(80, 5, "0", styleMed);
+        scoreBoxL.anchor.setTo(1, 0);
 
         for (i = 0; i < hpStart; i++) {
             currentHp = this.add.sprite(xpos - i*hpSpacing, ypos, 'hp');
-            if (side) {
-                hpL.push(currentHp);
-            } else {
-                hpR.push(currentHp);
-            }
+            hpL.push(currentHp);
         }
-  
+    },
+
+    initRightScore: function() {
+        var xpos;
+        var ypos = 25;
+        var hpSpacing = 12;
+        var hpStart = 4;
+        var currenthp;
+
+        xpos = gameWidth - 40 - 12;
+        this.add.sprite(gameWidth - 35, 5, 'player');
+        scoreBoxR = this.add.text(gameWidth - 40, 5, "0", styleMed);
+        scoreBoxR.anchor.setTo(1, 0);
+
+        for (i = 0; i < hpStart; i++) {
+            currentHp = this.add.sprite(xpos - i*hpSpacing, ypos, 'hp');
+            hpR.push(currentHp);
+        }
     },
 
     update: function () {
-        if (gameOver && this.time.now - timeCheck > 2000) {
-            this.gameOver();
-        } else if (gameStarted && !this.paused && !gameOver) {
+        if (gameStarted && !this.paused) {
             this.moveSpriteL();
             this.moveSpriteR();
 
@@ -306,8 +302,8 @@ BasicGame.MplayerGame.prototype = {
         this.state.start('MainMenu');
     },
 
-    gameOver: function(side) {
-        this.resetInfo;
+    gameOver: function() {
+        this.resetInfo();
         this.state.start('Mscore');
     },
 
@@ -321,42 +317,48 @@ BasicGame.MplayerGame.prototype = {
         hpR = [];
     },
 
-    //true - left false - right
-    updateScore: function(number, side) {
-        if (side) {
-            scoreL += number;
-            scoreBoxL.setText(scoreL);
+    updateLeftScore: function(amount) {
+        scoreL += amount;
+        scoreBoxL.setText(scoreL);
+    },
+
+    updateRightScore: function(amount) {
+        scoreR += amount;
+        scoreBoxR.setText(scoreR);
+    },
+
+    updateLeftHP: function(amount) {
+        if (hpL.length >= amount) {
+            while (amount-- != 0)
+                hpL.pop().destroy();
         }
         else {
-            scoreR += number;
-            scoreBoxR.setText(scoreR);
-        }
-    },
-
-    //true - left false - right
-    updateHp: function(side) {
-        var currenthp;
-        if (side && (hpL.length != 0)) {
-            currenthp = hpL.pop();
-            currenthp.destroy();
-        } else if (!side && (hpR.length != 0)) {
-            currenthp = hpR.pop();
-            currenthp.destroy();
-        } else {
             startEndText.setText("Game Over");
-            gameOver = true;
-            timeCheck = this.time.now;
+            timer = this.time.create(false);
+            timer.add(2000, this.gameOver, this);
+            timer.start();
         }
     },
 
-    onKeyUp: function() {
-        switch (event.keyCode) {
-            case Phaser.Keyboard.SPACEBAR:
-                if (!gameStarted) {
-                    startEndText.setText("");
-                    gameStarted = true;
-                }
-                break;
-            }
-    }
+    updateRightHP: function(amount) {
+        amount = 1;
+        if (hpL.length >= amount) {
+            while (amount-- != 0)
+                hpL.pop().destroy();
+        }
+        else {
+            startEndText.setText("Game Over");
+            timer = this.time.create(false);
+            timer.add(2000, this.gameOver, this);
+            timer.start();
+        }
+    },
+
+    onKeyDown: function() {        
+        if (!gameStarted) {
+            startEndText.setText("");
+            gameStarted = true;
+        }
+    }       
+    
 };
