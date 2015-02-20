@@ -135,6 +135,8 @@ BasicGame.MplayerGame.prototype = {
             this.spriteL = this.add.sprite(gameWidth/2 - spriteSize*2 , gameHeight - spriteSize,'spriteL');
             this.spriteR = this.add.sprite(gameWidth/2 + spriteSize*2 , gameHeight - spriteSize,'spriteR');
         }
+        this.spriteL.animations.add('walk');
+        this.spriteR.animations.add('walk');
         this.spriteL.anchor.setTo(0.5, 0.5);
         this.spriteR.anchor.setTo(0.5, 0.5);
         this.physics.arcade.enable(this.spriteL);
@@ -315,6 +317,8 @@ BasicGame.MplayerGame.prototype = {
             this.pauseButtonText.visible = false;
             this.playButton.visible = true;
             this.playButtonText.visible = true;
+            this.spriteL.animations.stop(null, true);
+            this.spriteR.animations.stop(null, true);
         }
         else {
             this.paused = false;
@@ -325,6 +329,8 @@ BasicGame.MplayerGame.prototype = {
             this.playButtonText.visible = false;
             this.pauseButton.visible = true;
             this.pauseButtonText.visible = true;
+            this.spriteL.animations.play('walk', 20, true);
+            this.spriteR.animations.play('walk', 20, true);
         }
     },
 
@@ -357,6 +363,8 @@ BasicGame.MplayerGame.prototype = {
     onKeyDown: function() {        
         if (!gameStarted) {
             startEndText.setText("");
+            this.spriteL.animations.play('walk', 20, true);
+            this.spriteR.animations.play('walk', 20, true);
             gameStarted = true;
         }
     }    

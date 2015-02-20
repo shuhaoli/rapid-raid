@@ -130,6 +130,7 @@ BasicGame.SplayerGame.prototype = {
         else if (pos == 1) {
             this.spriteL = this.add.sprite(gameWidth/2, gameHeight - spriteSize,'spriteL');
         }
+        this.spriteL.animations.add('walk');
         this.spriteL.anchor.setTo(0.5, 0.5);
         this.physics.arcade.enable(this.spriteL);
     },
@@ -242,6 +243,7 @@ BasicGame.SplayerGame.prototype = {
             this.pauseButtonText.visible = false;
             this.playButton.visible = true;
             this.playButtonText.visible = true;
+            this.spriteL.animations.stop(null, true);
         }
         else {
             this.paused = false;
@@ -252,6 +254,7 @@ BasicGame.SplayerGame.prototype = {
             this.playButtonText.visible = false;
             this.pauseButton.visible = true;
             this.pauseButtonText.visible = true;
+            this.spriteL.animations.play('walk', 20, true);
         }
     },
 
@@ -283,6 +286,7 @@ BasicGame.SplayerGame.prototype = {
     onKeyDown: function() {        
         if (!gameStarted) {
             startEndText.setText("");
+            this.spriteL.animations.play('walk', 20, true);
             gameStarted = true;
         }
     }    
