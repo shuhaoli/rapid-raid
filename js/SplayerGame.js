@@ -6,6 +6,9 @@ var gameStarted;
 var gameOver;
 var startEndText;
 var timeCheck;
+var cursors;
+var crates;
+
 
 BasicGame.SplayerGame = function (game) {
 
@@ -36,20 +39,29 @@ BasicGame.SplayerGame = function (game) {
 BasicGame.SplayerGame.prototype = {
 
     create: function () {
-        // add background image
-        this.add.sprite(0,0,'background3');
-        this.initTurrets();
-        this.initCrates();
-        this.initMap();
-        this.initBoudaries();
-        this.initScore();
+        this.physics.startSystem(Phaser.Physics.ARCADE);
+        this.add.sprite(0,0,'backgroundGame');
+
         gameStarted = false;
         gameOver = false;
-
         this.input.keyboard.addCallbacks(null, null, this.onKeyUp);
+
+        this.initKeyInput();
+        this.initTurrets();
+        this.initCrates();
+        this.initSprites();
+        this.initBoudaries();
+        this.initScore();
 
         startEndText = this.add.text(gameWidth/2, gameHeight/2, "Press Space Bar to Begin", styleSelection);
         startEndText.anchor.setTo(0.5, 0.5);
+
+        this.initMap();
+    },
+
+    //initalizes key inputs
+    initKeyInput: function() {
+        this.cursors = this.input.keyboard.createCursorKeys();
     },
 
     // initializes the background, buttons and pause panel
@@ -87,7 +99,6 @@ BasicGame.SplayerGame.prototype = {
         var btwspacing = 14;
         var turretSize = 32;
 
-
         for (var i = 0; i < numTurrets; i++) {
             if (i < numTurrets/2) {
                 this.add.sprite(0,scorebarHeight + i*(turretSize + btwspacing) + tbspacing, 'turretL');
@@ -105,10 +116,29 @@ BasicGame.SplayerGame.prototype = {
             var crateInfo = aplacedCrates[i];
             var currentCrate = crates.create(crateInfo['x'], crateInfo['y'], crateInfo['key']);
             currentCrate.anchor.setTo(0.5, 0.5);
+            this.physics.arcade.enable(currentCrate);
+            currentCrate.enableBody = true;
+            currentCrate.body.immovable = true;
             crates.add(currentCrate);
         }
+        this.physics.arcade.enable(crates);
     },
 
+        //initalizes score
+    initSprites: function() {
+        var spriteSize = 32;
+        var pos = Math.floor(Math.random() * 2);
+        if (pos == 0) {
+            this.sprite = this.add.sprite(gameWidth/2 - spriteSize*2 , scorebarHeight + spriteSize,'spriteL');
+        }
+        else if (pos == 1) {
+            this.sprite = this.add.sprite(gameWidth/2 - spriteSize*2 , gameHeight - spriteSize,'spriteL');
+        }
+        this.sprite.anchor.setTo(0.5, 0.5);
+        this.physics.arcade.enable(this.sprite);
+    },
+
+    //initalizes boundaries
     initBoudaries: function() {
         walls = this.add.group();
 
@@ -116,29 +146,35 @@ BasicGame.SplayerGame.prototype = {
         this.physics.arcade.enable(leftWall);
         leftWall.enableBody = true;
         leftWall.body.setSize(28, gameHeight, 0, 0);
+        leftWall.body.immovable = true;
         walls.add(leftWall);
 
         rightWall = this.add.sprite(gameWidth - 28, scorebarHeight);
         this.physics.arcade.enable(rightWall);
         rightWall.enableBody = true;
         rightWall.body.setSize(28, gameHeight, 0, 0);
+        rightWall.body.immovable = true;
         walls.add(rightWall);
 
         topWall = this.add.sprite(0, 0);
         this.physics.arcade.enable(topWall);
         topWall.enableBody = true;
         topWall.body.setSize(gameWidth, scorebarHeight + 5, 0, 0);
+        topWall.body.immovable = true;
         walls.add(topWall);
 
         bottomWall = this.add.sprite(0, scorebarHeight + gameHeight - 5);
         this.physics.arcade.enable(bottomWall);
         bottomWall.enableBody = true;
         bottomWall.body.setSize(gameWidth, menubarHeight + 5, 0, 0);
+        bottomWall.body.immovable = true;
         walls.add(bottomWall);
+
+        this.physics.arcade.enable(walls);
 
     },
 
-
+    //initalizes score
     initScore: function() {
         var xpos = 40 + 12*3;
         var ypos = 25;
@@ -161,14 +197,29 @@ BasicGame.SplayerGame.prototype = {
         if (gameOver && this.time.now - timeCheck > 2000) {
             this.gameOver();
         } else if (gameStarted && !this.paused && !gameOver) {
-            this.turret.reset(Math.random()*gameWidth, Math.random()*gameHeight);
-        }
+            this.moveSprite();
 
+            this.physics.arcade.collide(this.sprite, walls);
+            this.physics.arcade.collide(this.sprite, crates);
+        }            
     },
 
-    restartGame: function() {
-        this.resetInfo();
-        this.state.start('SCrate');
+    moveSprite: function() {
+        this.sprite.body.velocity.x = 0;
+        this.sprite.body.velocity.y = 0;
+
+        if (this.cursors.up.isDown) {
+            this.sprite.body.velocity.y = -100;
+        }
+        else if (this.cursors.down.isDown) {
+            this.sprite.body.velocity.y = 100;
+        }
+        if (this.cursors.left.isDown) {
+            this.sprite.body.velocity.x = -100;
+        }
+        else if (this.cursors.right.isDown) {
+            this.sprite.body.velocity.x = 100;
+        }  
     },
 
     // consider adding callback for resuming/pausing game in order to sync animation with actual pausing/resuming
@@ -195,10 +246,27 @@ BasicGame.SplayerGame.prototype = {
         }
     },
 
+    restartGame: function() {
+        this.resetInfo();
+        this.state.start('SCrate');
+    },
 
     quitGame: function (pointer) {
         this.resetInfo();
         this.state.start('MainMenu');
+    },
+
+    gameOver: function() {
+        this.resetInfo();
+        this.state.start('Sscore');   
+    },
+
+    // call when game is ending (either restart/gameover)
+    // if any of this info is needed in a future state, remove from here
+    resetInfo: function() {
+        scoreBox = null;
+        hp = [];
+        aplacedCrates = [];
     },
 
     //true - left false - right
@@ -218,19 +286,6 @@ BasicGame.SplayerGame.prototype = {
         }
     },
 
-    gameOver: function() {
-        this.resetInfo();
-        this.state.start('Sscore');   
-    },
-
-    // call when game is ending (either restart/gameover)
-    // if any of this info is needed in a future state, remove from here
-    resetInfo: function() {
-        scoreBox = null;
-        hp = [];
-        aplacedCrates = [];
-    },
-
     onKeyUp: function() {
         switch (event.keyCode) {
             case Phaser.Keyboard.SPACEBAR:
@@ -242,7 +297,6 @@ BasicGame.SplayerGame.prototype = {
             }
 
     }
-
 
 };
 

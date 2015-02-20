@@ -16,7 +16,7 @@ BasicGame.mCrate.prototype = {
 
     create: function () {
         // add background image
-        this.add.sprite(0,0,'background3');
+        this.add.sprite(0,0,'backgroundGame');
         this.initTurrets();
         this.initCrates();
         this.initTimer();

@@ -32,7 +32,7 @@ BasicGame.Preloader.prototype = {
 		this.load.image('settingsButton', 'assets/settingsButton.png');
 		this.load.image('background1', 'assets/background1.png');
 		this.load.image('background2', 'assets/background2.png');
-		this.load.image('background3', 'assets/background3.png');	
+		this.load.image('backgroundGame', 'assets/background3.png');	
 		this.load.image('crate', 'assets/darkcrate-32.png');	
 		this.load.image('turretL', 'assets/turretL.png');	
 		this.load.image('turretR', 'assets/turretR.png');	
@@ -49,6 +49,8 @@ BasicGame.Preloader.prototype = {
 		this.load.image('medButton', 'assets/medButton.png');
 		this.load.image('hp', 'assets/hpbar.png');
 		this.load.image('player', 'assets/playerIcon1.png');
+		this.load.image('spriteL', 'assets/sprite1.png');
+		this.load.image('spriteR', 'assets/sprite1.png');
 
 	},
 

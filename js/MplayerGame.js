@@ -37,23 +37,37 @@ BasicGame.MplayerGame = function (game) {
 };
 
 BasicGame.MplayerGame.prototype = {
-    // start game in paused state
+
     create: function () {
-        // add background image
-        this.add.sprite(0,0,'background3');
-        this.initTurrets();
-        this.initCrates();
-        this.initMap();
-        this.initBoudaries();
-        this.initScore();
+        this.physics.startSystem(Phaser.Physics.ARCADE);
+        this.add.sprite(0,0,'backgroundGame');
+
         gameStarted = false;
         gameOver = false;
-
         this.input.keyboard.addCallbacks(null, null, this.onKeyUp);
+
+        this.initKeyInput();
+        this.initTurrets();
+        this.initCrates();
+        this.initSprites();
+        this.initBoudaries();
+        this.initScore();
 
         startEndText = this.add.text(gameWidth/2, gameHeight/2, "Press Space Bar to Begin", styleSelection);
         startEndText.anchor.setTo(0.5, 0.5);
 
+        this.initMap();
+    },
+
+    // initalizes key input
+    initKeyInput: function() {
+        this.cursors = this.input.keyboard.createCursorKeys();
+        this.wasd = {
+            up: this.input.keyboard.addKey(Phaser.Keyboard.W),
+            down: this.input.keyboard.addKey(Phaser.Keyboard.S),
+            left: this.input.keyboard.addKey(Phaser.Keyboard.A),
+            right: this.input.keyboard.addKey(Phaser.Keyboard.D),
+        }
     },
 
     // initializes the background, buttons and pause panel
@@ -80,10 +94,6 @@ BasicGame.MplayerGame.prototype = {
         // add pause panel
         this.pausePanel = new PausePanel(this.game);
         this.add.existing(this.pausePanel);
-
-        this.testButton = this.add.button(0, 0, 'selectionButton', this.updateHp, this);
-
-
     },
 
     // initializes turrets
@@ -112,53 +122,30 @@ BasicGame.MplayerGame.prototype = {
             var crateInfo = aplacedCrates[i];
             var currentCrate = crates.create(crateInfo['x'], crateInfo['y'], crateInfo['key']);
             currentCrate.anchor.setTo(0.5, 0.5);
+            this.physics.arcade.enable(currentCrate);
+            currentCrate.enableBody = true;
+            currentCrate.body.immovable = true;
             crates.add(currentCrate);
         }
+        this.physics.arcade.enable(crates);
     },
 
-    update: function () {
-        if (gameOver && this.time.now - timeCheck > 2000) {
-            this.gameOver();
-        } else if (gameStarted && !this.paused && !gameOver) {
-            this.turret.reset(Math.random()*gameWidth, Math.random()*gameHeight);
+    // initalizes sprites
+    initSprites: function() {
+        var spriteSize = 32;
+        var pos = Math.floor(Math.random() * 2);
+        if (pos == 0) {
+            this.spriteL = this.add.sprite(gameWidth/2 - spriteSize*2 , scorebarHeight + spriteSize,'spriteL');
+            this.spriteR = this.add.sprite(gameWidth/2 + spriteSize*2 , scorebarHeight + spriteSize,'spriteR');
         }
-    },
-
-    restartGame: function() {
-        this.resetInfo();
-        this.state.start('MCrate');
-    },
-
-    // consider adding callback for resuming/pausing game in order to sync animation with actual pausing/resuming
-    pauseGame: function () {
-        if (!this.paused) {
-            this.paused = true;
-            // show pause panel
-            this.pausePanel.show();
-            // replace pause button with resume button
-            this.pauseButton.visible = false;
-            this.pauseButtonText.visible = false;
-            this.playButton.visible = true;
-            this.playButtonText.visible = true;
+        else if (pos == 1) {
+            this.spriteL = this.add.sprite(gameWidth/2 - spriteSize*2 , gameHeight - spriteSize,'spriteL');
+            this.spriteR = this.add.sprite(gameWidth/2 + spriteSize*2 , gameHeight - spriteSize,'spriteR');
         }
-        else {
-            this.paused = false;
-            // hide pause panel
-            this.pausePanel.hide();
-            // replace resume butotn with pause button
-            this.playButton.visible = false;
-            this.playButtonText.visible = false;
-            this.pauseButton.visible = true;
-            this.pauseButtonText.visible = true;
-        }
-    },
-
-
-    quitGame: function (pointer) {
-
-        //  Then let's go back to the main menu.
-        this.state.start('MainMenu');
-
+        this.spriteL.anchor.setTo(0.5, 0.5);
+        this.spriteR.anchor.setTo(0.5, 0.5);
+        this.physics.arcade.enable(this.spriteL);
+        this.physics.arcade.enable(this.spriteR);
     },
 
     initBoudaries: function() {
@@ -168,25 +155,31 @@ BasicGame.MplayerGame.prototype = {
         this.physics.arcade.enable(leftWall);
         leftWall.enableBody = true;
         leftWall.body.setSize(28, gameHeight, 0, 0);
+        leftWall.body.immovable = true;
         walls.add(leftWall);
 
         rightWall = this.add.sprite(gameWidth - 28, scorebarHeight);
         this.physics.arcade.enable(rightWall);
         rightWall.enableBody = true;
         rightWall.body.setSize(28, gameHeight, 0, 0);
+        rightWall.body.immovable = true;
         walls.add(rightWall);
 
         topWall = this.add.sprite(0, 0);
         this.physics.arcade.enable(topWall);
         topWall.enableBody = true;
         topWall.body.setSize(gameWidth, scorebarHeight + 5, 0, 0);
+        topWall.body.immovable = true;
         walls.add(topWall);
 
         bottomWall = this.add.sprite(0, scorebarHeight + gameHeight - 5);
         this.physics.arcade.enable(bottomWall);
         bottomWall.enableBody = true;
         bottomWall.body.setSize(gameWidth, menubarHeight + 5, 0, 0);
+        bottomWall.body.immovable = true;
         walls.add(bottomWall);
+
+        this.physics.arcade.enable(walls);
 
     },
 
@@ -226,6 +219,108 @@ BasicGame.MplayerGame.prototype = {
   
     },
 
+    update: function () {
+        if (gameOver && this.time.now - timeCheck > 2000) {
+            this.gameOver();
+        } else if (gameStarted && !this.paused && !gameOver) {
+            this.moveSpriteL();
+            this.moveSpriteR();
+
+            this.physics.arcade.collide(this.spriteL, this.spriteR);
+            this.physics.arcade.collide(this.spriteR, this.spriteL);
+            this.physics.arcade.collide(this.spriteL, walls);
+            this.physics.arcade.collide(this.spriteR, walls);
+            this.physics.arcade.collide(this.spriteL, crates);
+            this.physics.arcade.collide(this.spriteR, crates);
+        }            
+    },
+
+    moveSpriteR: function() {
+        this.spriteR.body.velocity.x = 0;
+        this.spriteR.body.velocity.y = 0;
+
+        if (this.cursors.up.isDown) {
+            this.spriteR.body.velocity.y = -100;
+        }
+        else if (this.cursors.down.isDown) {
+            this.spriteR.body.velocity.y = 100;
+        }
+        if (this.cursors.left.isDown) {
+            this.spriteR.body.velocity.x = -100;
+        }
+        else if (this.cursors.right.isDown) {
+            this.spriteR.body.velocity.x = 100;
+        }  
+    },
+
+    moveSpriteL: function() {
+        this.spriteL.body.velocity.x = 0;
+        this.spriteL.body.velocity.y = 0;
+
+        if (this.wasd.up.isDown) {
+            this.spriteL.body.velocity.y = -100;
+        }
+        else if (this.wasd.down.isDown) {
+            this.spriteL.body.velocity.y = 100;
+        }
+        if (this.wasd.left.isDown) {
+            this.spriteL.body.velocity.x = -100;
+        }
+        else if (this.wasd.right.isDown) {
+            this.spriteL.body.velocity.x = 100;
+        }  
+    },
+
+    // consider adding callback for resuming/pausing game in order to sync animation with actual pausing/resuming
+    pauseGame: function () {
+        if (!this.paused) {
+            this.paused = true;
+            // show pause panel
+            this.pausePanel.show();
+            // replace pause button with resume button
+            this.pauseButton.visible = false;
+            this.pauseButtonText.visible = false;
+            this.playButton.visible = true;
+            this.playButtonText.visible = true;
+        }
+        else {
+            this.paused = false;
+            // hide pause panel
+            this.pausePanel.hide();
+            // replace resume butotn with pause button
+            this.playButton.visible = false;
+            this.playButtonText.visible = false;
+            this.pauseButton.visible = true;
+            this.pauseButtonText.visible = true;
+        }
+    },
+
+    restartGame: function() {
+        this.resetInfo();
+        this.state.start('MCrate');
+    },
+
+
+    quitGame: function (pointer) {
+        this.resetInfo();
+        this.state.start('MainMenu');
+    },
+
+    gameOver: function(side) {
+        this.resetInfo;
+        this.state.start('Mscore');
+    },
+
+    // call when game is ending (either restart/gameover)
+    // if any of this info is needed in a future state, remove from here
+    resetInfo: function() {
+        scoreBoxL = null;
+        scoreBoxR = null;
+        aplacedCrates = [];
+        hpL = [];
+        hpR = [];
+    },
+
     //true - left false - right
     updateScore: function(number, side) {
         if (side) {
@@ -252,21 +347,6 @@ BasicGame.MplayerGame.prototype = {
             gameOver = true;
             timeCheck = this.time.now;
         }
-    },
-
-    gameOver: function(side) {
-        this.resetInfo;
-        this.state.start('Mscore');
-    },
-
-    // call when game is ending (either restart/gameover)
-    // if any of this info is needed in a future state, remove from here
-    resetInfo: function() {
-        scoreBoxL = null;
-        scoreBoxR = null;
-        aplacedCrates = [];
-        hpL = [];
-        hpR = [];
     },
 
     onKeyUp: function() {
