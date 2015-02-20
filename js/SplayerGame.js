@@ -1,6 +1,7 @@
 var walls;
 var scoreBox;
 var hp = [];
+var cursors;
 
 BasicGame.SplayerGame = function (game) {
 
@@ -31,13 +32,17 @@ BasicGame.SplayerGame = function (game) {
 BasicGame.SplayerGame.prototype = {
     // start game in paused state
     create: function () {
+        this.physics.startSystem(Phaser.Physics.ARCADE);
         // add background image
         this.add.sprite(0,0,'background3');
+        this.initKeyInput();
         this.initTurrets();
         this.initCrates();
+        this.initSprites();
         this.initMap();
         this.initBoudaries();
         this.initScore();
+
     },
 
     // initializes the background, buttons and pause panel
@@ -94,6 +99,8 @@ BasicGame.SplayerGame.prototype = {
             currentCrate.anchor.setTo(0.5, 0.5);
             crates.add(currentCrate);
         }
+        this.physics.arcade.enable(crates);
+        crates.enableBody = true;
     },
 
     initBoudaries: function() {
@@ -145,10 +152,66 @@ BasicGame.SplayerGame.prototype = {
   
     },
 
+    initSprites: function() {
+        var spriteSize = 32;
+        var pos = Math.floor(Math.random() * 2);
+        if (pos == 0) {
+            this.spriteL = this.add.sprite(gameWidth/2 - spriteSize*2 , scorebarHeight + spriteSize,'sprite1');
+            this.spriteR = this.add.sprite(gameWidth/2 + spriteSize*2 , scorebarHeight + spriteSize,'sprite1');
+        }
+        else if (pos == 1) {
+            this.spriteL = this.add.sprite(gameWidth/2 - spriteSize*2 , gameHeight - spriteSize,'sprite1');
+            this.spriteR = this.add.sprite(gameWidth/2 + spriteSize*2 , gameHeight - spriteSize,'sprite1');
+        }
+        this.spriteL.anchor.setTo(0.5, 0.5);
+        this.physics.arcade.enable(this.spriteL);
+    },
+
+    initKeyInput: function() {
+        cursors = this.input.keyboard.createCursorKeys();
+    },
+
     update: function () {
-        //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
-        //if (!this.paused) 
-         //   this.turret.reset(Math.random()*gameWidth, Math.random()*gameHeight);
+        if (!this.paused) {
+            if (cursors.up.isDown && lUp) {
+                this.spriteL.y--;
+            }
+            else if (cursors.down.isDown && lDown) {
+                this.spriteL.y++;
+            }
+            if (cursors.left.isDown && lLeft) {
+                this.spriteL.x--;
+            }
+            else if (cursors.right.isDown && lRight) {
+                this.spriteL.x++;
+            }
+        }
+
+        if (this.physics.arcade.overlap(this.spriteL, crates) || 
+            this.physics.arcade.overlap(this.spriteL, walls)) {
+            if (cursors.up.isDown) {
+                lUp = false;
+                this.spriteL.y++;
+            }
+            else if (cursors.down.isDown) {
+                lDown = false;
+                this.spriteL.y--;
+            }
+            if (cursors.left.isDown) {
+                lLeft = false;
+                this.spriteL.x++;
+            }
+            else if (cursors.right.isDown) {
+                lRight = false;
+                this.spriteL.x--;
+            }
+        }
+        else {
+            lUp = true;
+            lDown = true;
+            lLeft = true;
+            lRight = true;
+        }            
     },
 
     restartGame: function() {
