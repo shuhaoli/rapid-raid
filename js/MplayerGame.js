@@ -5,6 +5,10 @@ var scoreL = 0;
 var scoreR = 0;
 var hpL = [];
 var hpR = [];
+var gameStarted;
+var gameOver;
+var startEndText;
+var timeCheck;
 
 BasicGame.MplayerGame = function (game) {
 
@@ -40,9 +44,15 @@ BasicGame.MplayerGame.prototype = {
         this.initTurrets();
         this.initCrates();
         this.initMap();
-
         this.initBoudaries();
         this.initScore();
+        gameStarted = false;
+        gameOver = false;
+
+        this.input.keyboard.addCallbacks(null, null, this.onKeyUp);
+
+        startEndText = this.add.text(gameWidth/2, gameHeight/2, "Press Space Bar to Begin", styleSelection);
+        startEndText.anchor.setTo(0.5, 0.5);
 
     },
 
@@ -70,6 +80,10 @@ BasicGame.MplayerGame.prototype = {
         // add pause panel
         this.pausePanel = new PausePanel(this.game);
         this.add.existing(this.pausePanel);
+
+        this.testButton = this.add.button(0, 0, 'selectionButton', this.updateHp, this);
+
+
     },
 
     // initializes turrets
@@ -103,12 +117,15 @@ BasicGame.MplayerGame.prototype = {
     },
 
     update: function () {
-        //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
-        //if (!this.paused) 
-         //   this.turret.reset(Math.random()*gameWidth, Math.random()*gameHeight);
+        if (gameOver && this.time.now - timeCheck > 2000) {
+            this.gameOver();
+        } else if (gameStarted && !this.paused && !gameOver) {
+            this.turret.reset(Math.random()*gameWidth, Math.random()*gameHeight);
+        }
     },
 
     restartGame: function() {
+        this.resetInfo();
         this.state.start('MCrate');
     },
 
@@ -209,7 +226,6 @@ BasicGame.MplayerGame.prototype = {
   
     },
 
-
     //true - left false - right
     updateScore: function(number, side) {
         if (side) {
@@ -232,12 +248,35 @@ BasicGame.MplayerGame.prototype = {
             currenthp = hpR.pop();
             currenthp.destroy();
         } else {
-            this.gameOver(side);
+            startEndText.setText("Game Over");
+            gameOver = true;
+            timeCheck = this.time.now;
         }
     },
 
     gameOver: function(side) {
-        //!!! STUBBBBB
+        this.resetInfo;
         this.state.start('Mscore');
+    },
+
+    // call when game is ending (either restart/gameover)
+    // if any of this info is needed in a future state, remove from here
+    resetInfo: function() {
+        scoreBoxL = null;
+        scoreBoxR = null;
+        aplacedCrates = [];
+        hpL = [];
+        hpR = [];
+    },
+
+    onKeyUp: function() {
+        switch (event.keyCode) {
+            case Phaser.Keyboard.SPACEBAR:
+                if (!gameStarted) {
+                    startEndText.setText("");
+                    gameStarted = true;
+                }
+                break;
+            }
     }
 };

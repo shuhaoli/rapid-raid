@@ -1,15 +1,14 @@
 var crates;
 var placedCrates;
 var remainingCrates = [];
+var aplacedCrates = [];
 var selectedCrate;
 var walls;
+var timer;
+var turnsLeft;
+
 
 BasicGame.mCrate = function (game) {
-
-     //  the repeatable random number generator (Phaser.RandomDataGenerator)
-
-    //  You can use any of these from any function within this State.
-    //  But do consider them as being 'reserved words', i.e. don't create a property for your own game called "world" or you'll over-write the world reference.
 
 };
 
@@ -18,11 +17,11 @@ BasicGame.mCrate.prototype = {
     create: function () {
         // add background image
         this.add.sprite(0,0,'background3');
-        
         this.initTurrets();
         this.initCrates();
+        this.initTimer();
         this.initMap();
-
+        this.initBoudaries();
     },
 
     // initializes the background, buttons and pause panel
@@ -46,18 +45,27 @@ BasicGame.mCrate.prototype = {
         this.playButtonText.visible = false;
         this.paused = false;
 
+        // moves left text
+        turnsLeft = 8;
+        this.movesText = this.add.text(buttonWidth/8, ypos + buttonHeight/2, ((turnsLeft % 2) == 0) ? "Player 1" : "Player 2" , styleSmall);
+        this.movesText.anchor.setTo(0, 0.35);
+
+
         var medButtonWidth = 60;
         var medButtonHeight = 40;
 
-        // add edit button
-        this.editButton = this.add.button(gameWidth - medButtonWidth, 0, 'medButton', this.doneCrates, this);
-        this.editButtonText = this.add.text(gameWidth - medButtonWidth, medButtonHeight/2, 'Done', styleMed);        
+        // add skip button
+        this.editButton = this.add.button(gameWidth - medButtonWidth, 0, 'medButton', this.skipCrates, this);
+        this.editButtonText = this.add.text(gameWidth - medButtonWidth, medButtonHeight/2, 'Skip', styleMed);        
         this.editButtonText.anchor.setTo(0, 0.35);
 
         // add add button
         this.addButton = this.add.button(gameWidth - medButtonWidth*2, 0, 'medButton', this.addCrate, this);
         this.addButtonText = this.add.text(gameWidth - medButtonWidth*2, medButtonHeight/2, 'Add', styleMed);
         this.addButtonText.anchor.setTo(-0.5, 0.35);
+
+        // add timer text
+        this.timerText = this.add.text(gameWidth/2 - medButtonWidth/8, (gameHeight + scorebarHeight + menubarHeight) - medButtonHeight/2, timer.duration.toFixed(0)/1000, styleMed);
 
         // add pause panel
         this.pausePanel = new PausePanel(this.game);
@@ -127,14 +135,33 @@ BasicGame.mCrate.prototype = {
         crates.enableBody = true;
     },
 
+    initTimer: function() {
+        var turnResetTimer = 15000; // 15 seconds
+        timer = this.time.create(false);
+        timer.loop(turnResetTimer, this.changeTurn, this);
+        timer.start();
+    },
+
     placeCrate: function(pointer) {
-        if (selectedCrate != null && !this.physics.arcade.overlap(selectedCrate, placedCrates)) {
+        if (selectedCrate != null && !this.physics.arcade.overlap(selectedCrate, placedCrates) &&
+            !this.physics.arcade.overlap(selectedCrate, walls)) {
             selectedCrate.body.velocity = 0;
             placedCrates.add(selectedCrate);
             var crateInfo = {x: selectedCrate.x, y: selectedCrate.y, key: selectedCrate.key}
             aplacedCrates.push(crateInfo);
             selectedCrate = null;
+            timer.destroy();
+            this.initTimer();
+            this.changeTurn();
         }
+    },
+
+    changeTurn: function() {
+        if (--turnsLeft == 0) {
+            timer.destroy();
+            this.doneCrates();
+        }
+        this.movesText.text = ((turnsLeft % 2) == 0) ? "Player 1" : "Player 2";
     },
 
     update: function () {
@@ -142,10 +169,12 @@ BasicGame.mCrate.prototype = {
             // 60 is default speed, 50 is 50 ms time requirement
             this.physics.arcade.moveToPointer(selectedCrate, 60, this.input.activePointer, 50);
         }
+        this.timerText.text = Math.floor((timer.duration.toFixed(0)/1000));
     },
 
     restartGame: function() {
-        this.state.start('SCrate');
+        this.resetInfo();
+        this.state.start('MCrate');
     },
 
     // consider adding callback for resuming/pausing game in order to sync animation with actual pausing/resuming
@@ -159,6 +188,7 @@ BasicGame.mCrate.prototype = {
             this.pauseButtonText.visible = false;
             this.playButton.visible = true;
             this.playButtonText.visible = true;
+            timer.pause();
         }
         else {
             this.paused = false;
@@ -169,6 +199,7 @@ BasicGame.mCrate.prototype = {
             this.playButtonText.visible = false;
             this.pauseButton.visible = true;
             this.pauseButtonText.visible = true;
+            timer.resume();
         }
     },
 
@@ -179,14 +210,14 @@ BasicGame.mCrate.prototype = {
 
         //  Then let's go back to the main menu.
         this.state.start('MainMenu');
-
     },
 
     addCrate: function() {
-        selectedCrate = remainingCrates.pop();
-        this.input.onDown.add(this.placeCrate, this);
+        if (selectedCrate == null) {
+            selectedCrate = remainingCrates.pop();
+            this.input.onDown.add(this.placeCrate, this);
+        }
     },
-
 
     initBoudaries: function() {
         walls = this.add.group();
@@ -216,8 +247,22 @@ BasicGame.mCrate.prototype = {
         walls.add(bottomWall);
     },
 
-    doneCrates: function() {
-        this.state.start('MplayerGame');
+    skipCrates: function() {
+        if (selectedCrate == null) {
+           this.initTimer();
+           this.changeTurn();
+       }
+    },
+
+     doneCrates: function() {
+        if (selectedCrate == null) {
+           this.state.start('MplayerGame');
+       }
+    },
+
+    resetInfo: function() {
+        remainingCrates = [];
+        selectedCrate = null;
+        aplacedCrates = [];
     }
 };
-

@@ -4,6 +4,8 @@ var remainingCrates = [];
 var aplacedCrates = [];
 var selectedCrate;
 var walls;
+var timer;
+var turnsLeft;
 
 
 BasicGame.sCrate = function (game) {
@@ -15,9 +17,9 @@ BasicGame.sCrate.prototype = {
     create: function () {
         // add background image
         this.add.sprite(0,0,'background3');
-        
         this.initTurrets();
         this.initCrates();
+        this.initTimer();
         this.initMap();
         this.initBoudaries();
     },
@@ -43,6 +45,12 @@ BasicGame.sCrate.prototype = {
         this.playButtonText.visible = false;
         this.paused = false;
 
+        // moves left text
+        turnsLeft = 8;
+        this.movesText = this.add.text(buttonWidth/8, ypos + buttonHeight/2, "Moves: " + turnsLeft, styleSmall);
+        this.movesText.anchor.setTo(0, 0.35);
+
+
         var medButtonWidth = 60;
         var medButtonHeight = 40;
 
@@ -55,6 +63,9 @@ BasicGame.sCrate.prototype = {
         this.addButton = this.add.button(gameWidth - medButtonWidth*2, 0, 'medButton', this.addCrate, this);
         this.addButtonText = this.add.text(gameWidth - medButtonWidth*2, medButtonHeight/2, 'Add', styleMed);
         this.addButtonText.anchor.setTo(-0.5, 0.35);
+
+        // add timer text
+        this.timerText = this.add.text(gameWidth/2 - medButtonWidth/8, (gameHeight + scorebarHeight + menubarHeight) - medButtonHeight/2, timer.duration.toFixed(0)/1000, styleMed);
 
         // add pause panel
         this.pausePanel = new PausePanel(this.game);
@@ -124,6 +135,13 @@ BasicGame.sCrate.prototype = {
         crates.enableBody = true;
     },
 
+    initTimer: function() {
+        var turnResetTimer = 10000; // 10 seconds
+        timer = this.time.create(false);
+        timer.loop(turnResetTimer, this.changeTurn, this);
+        timer.start();
+    },
+
     placeCrate: function(pointer) {
         if (selectedCrate != null && !this.physics.arcade.overlap(selectedCrate, placedCrates) &&
             !this.physics.arcade.overlap(selectedCrate, walls)) {
@@ -132,7 +150,18 @@ BasicGame.sCrate.prototype = {
             var crateInfo = {x: selectedCrate.x, y: selectedCrate.y, key: selectedCrate.key}
             aplacedCrates.push(crateInfo);
             selectedCrate = null;
+            timer.destroy();
+            this.initTimer();
+            this.changeTurn();
         }
+    },
+
+    changeTurn: function() {
+        if (--turnsLeft == 0) {
+            timer.destroy();
+            this.doneCrates();
+        }
+        this.movesText.text = "Moves: " + turnsLeft;
     },
 
     update: function () {
@@ -140,9 +169,11 @@ BasicGame.sCrate.prototype = {
             // 60 is default speed, 50 is 50 ms time requirement
             this.physics.arcade.moveToPointer(selectedCrate, 60, this.input.activePointer, 50);
         }
+        this.timerText.text = Math.floor((timer.duration.toFixed(0)/1000));
     },
 
     restartGame: function() {
+        this.resetInfo();
         this.state.start('SCrate');
     },
 
@@ -157,6 +188,7 @@ BasicGame.sCrate.prototype = {
             this.pauseButtonText.visible = false;
             this.playButton.visible = true;
             this.playButtonText.visible = true;
+            timer.pause();
         }
         else {
             this.paused = false;
@@ -167,6 +199,7 @@ BasicGame.sCrate.prototype = {
             this.playButtonText.visible = false;
             this.pauseButton.visible = true;
             this.pauseButtonText.visible = true;
+            timer.resume();
         }
     },
 
@@ -177,12 +210,13 @@ BasicGame.sCrate.prototype = {
 
         //  Then let's go back to the main menu.
         this.state.start('MainMenu');
-
     },
 
     addCrate: function() {
-        selectedCrate = remainingCrates.pop();
-        this.input.onDown.add(this.placeCrate, this);
+        if (selectedCrate == null) {
+            selectedCrate = remainingCrates.pop();
+            this.input.onDown.add(this.placeCrate, this);
+        }
     },
 
     initBoudaries: function() {
@@ -214,6 +248,14 @@ BasicGame.sCrate.prototype = {
     },
 
     doneCrates: function() {
-        this.state.start('SplayerGame');
+        if (selectedCrate == null) {
+           this.state.start('SplayerGame');
+       }
+    },
+
+    resetInfo: function() {
+        remainingCrates = [];
+        selectedCrate = null;
+        aplacedCrates = [];
     }
 };

@@ -2,6 +2,10 @@ var walls;
 var scoreBox;
 var score = 0;
 var hp = [];
+var gameStarted;
+var gameOver;
+var startEndText;
+var timeCheck;
 
 BasicGame.SplayerGame = function (game) {
 
@@ -11,7 +15,7 @@ BasicGame.SplayerGame = function (game) {
     this.add;       //  used to add sprites, text, groups, etc (Phaser.GameObjectFactory)
     this.camera;    //  a reference to the game camera (Phaser.Camera)
     this.cache;     //  the game cache (Phaser.Cache)
-    this.input;     //  the global input manager. You can access this.input.keyboard, this.input.mouse, as well from it. (Phaser.Input)
+    this.input;     //  the gobal input manager. You can access this.input.keyboard, this.input.mouse, as well from it. (Phaser.Input)
     this.load;      //  for preloading assets (Phaser.Loader)
     this.math;      //  lots of useful common math operations (Phaser.Math)
     this.sound;     //  the sound manager - add a sound, play one, set-up markers, etc (Phaser.SoundManager)
@@ -30,18 +34,22 @@ BasicGame.SplayerGame = function (game) {
 };
 
 BasicGame.SplayerGame.prototype = {
-    // start game in paused state
+
     create: function () {
         // add background image
         this.add.sprite(0,0,'background3');
         this.initTurrets();
         this.initCrates();
         this.initMap();
-
         this.initBoudaries();
         this.initScore();
+        gameStarted = false;
+        gameOver = false;
 
+        this.input.keyboard.addCallbacks(null, null, this.onKeyUp);
 
+        startEndText = this.add.text(gameWidth/2, gameHeight/2, "Press Space Bar to Begin", styleSelection);
+        startEndText.anchor.setTo(0.5, 0.5);
     },
 
     // initializes the background, buttons and pause panel
@@ -68,6 +76,7 @@ BasicGame.SplayerGame.prototype = {
         // add pause panel
         this.pausePanel = new PausePanel(this.game);
         this.add.existing(this.pausePanel);
+
     },
 
     // initializes turrets
@@ -98,47 +107,6 @@ BasicGame.SplayerGame.prototype = {
             currentCrate.anchor.setTo(0.5, 0.5);
             crates.add(currentCrate);
         }
-    },
-
-    update: function () {
-        //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
-        //if (!this.paused) 
-         //   this.turret.reset(Math.random()*gameWidth, Math.random()*gameHeight);
-    },
-
-    restartGame: function() {
-        this.state.start('SCrate');
-    },
-
-    // consider adding callback for resuming/pausing game in order to sync animation with actual pausing/resuming
-    pauseGame: function () {
-        if (!this.paused) {
-            this.paused = true;
-            // show pause panel
-            this.pausePanel.show();
-            // replace pause button with resume button
-            this.pauseButton.visible = false;
-            this.pauseButtonText.visible = false;
-            this.playButton.visible = true;
-            this.playButtonText.visible = true;
-        }
-        else {
-            this.paused = false;
-            // hide pause panel
-            this.pausePanel.hide();
-            // replace resume butotn with pause button
-            this.playButton.visible = false;
-            this.playButtonText.visible = false;
-            this.pauseButton.visible = true;
-            this.pauseButtonText.visible = true;
-        }
-    },
-
-
-    quitGame: function (pointer) {
-
-        //  Then let's go back to the main menu.
-        this.state.start('MainMenu');
     },
 
     initBoudaries: function() {
@@ -178,7 +146,6 @@ BasicGame.SplayerGame.prototype = {
         var hpStart = 4;
         var currenthp;
 
-
         this.add.sprite(5, 5, 'player');
         scoreBox = this.add.text(86, 5, "0", styleMed);
         scoreBox.anchor.setTo(1, 0);
@@ -188,6 +155,50 @@ BasicGame.SplayerGame.prototype = {
             hp.push(currenthp);
         }
   
+    },
+
+    update: function () {
+        if (gameOver && this.time.now - timeCheck > 2000) {
+            this.gameOver();
+        } else if (gameStarted && !this.paused && !gameOver) {
+            this.turret.reset(Math.random()*gameWidth, Math.random()*gameHeight);
+        }
+
+    },
+
+    restartGame: function() {
+        this.resetInfo();
+        this.state.start('SCrate');
+    },
+
+    // consider adding callback for resuming/pausing game in order to sync animation with actual pausing/resuming
+    pauseGame: function () {
+        if (!this.paused) {
+            this.paused = true;
+            // show pause panel
+            this.pausePanel.show();
+            // replace pause button with resume button
+            this.pauseButton.visible = false;
+            this.pauseButtonText.visible = false;
+            this.playButton.visible = true;
+            this.playButtonText.visible = true;
+        }
+        else {
+            this.paused = false;
+            // hide pause panel
+            this.pausePanel.hide();
+            // replace resume butotn with pause button
+            this.playButton.visible = false;
+            this.playButtonText.visible = false;
+            this.pauseButton.visible = true;
+            this.pauseButtonText.visible = true;
+        }
+    },
+
+
+    quitGame: function (pointer) {
+        this.resetInfo();
+        this.state.start('MainMenu');
     },
 
     //true - left false - right
@@ -201,13 +212,35 @@ BasicGame.SplayerGame.prototype = {
         if (hp.length != 0) {
             hp.pop().destroy();
         } else {
-            this.gameOver();
+            startEndText.setText("Game Over");
+            gameOver = true;
+            timeCheck = this.time.now;
         }
     },
 
     gameOver: function() {
-        //!!! STUBBBBB
-        this.state.start('Sscore');
+        this.resetInfo();
+        this.state.start('Sscore');   
+    },
+
+    // call when game is ending (either restart/gameover)
+    // if any of this info is needed in a future state, remove from here
+    resetInfo: function() {
+        scoreBox = null;
+        hp = [];
+        aplacedCrates = [];
+    },
+
+    onKeyUp: function() {
+        switch (event.keyCode) {
+            case Phaser.Keyboard.SPACEBAR:
+                if (!gameStarted) {
+                    startEndText.setText("");
+                    gameStarted = true;
+                }
+                break;
+            }
+
     }
 
 
