@@ -231,6 +231,43 @@ BasicGame.MplayerGame.prototype = {
         }            
     },
 
+    updateLeftScore: function(amount) {
+        scoreL += amount;
+        scoreBoxL.setText(scoreL);
+    },
+
+    updateRightScore: function(amount) {
+        scoreR += amount;
+        scoreBoxR.setText(scoreR);
+    },
+
+    updateLeftHP: function(amount) {
+        if (hpL.length >= amount) {
+            while (amount-- != 0)
+                hpL.pop().destroy();
+        }
+        else {
+            startEndText.setText("Game Over");
+            timer = this.time.create(false);
+            timer.add(2000, this.gameOver, this);
+            timer.start();
+        }
+    },
+
+    updateRightHP: function(amount) {
+        amount = 1;
+        if (hpL.length >= amount) {
+            while (amount-- != 0)
+                hpL.pop().destroy();
+        }
+        else {
+            startEndText.setText("Game Over");
+            timer = this.time.create(false);
+            timer.add(2000, this.gameOver, this);
+            timer.start();
+        }
+    },
+
     moveSpriteR: function() {
         this.spriteR.body.velocity.x = 0;
         this.spriteR.body.velocity.y = 0;
@@ -317,48 +354,10 @@ BasicGame.MplayerGame.prototype = {
         hpR = [];
     },
 
-    updateLeftScore: function(amount) {
-        scoreL += amount;
-        scoreBoxL.setText(scoreL);
-    },
-
-    updateRightScore: function(amount) {
-        scoreR += amount;
-        scoreBoxR.setText(scoreR);
-    },
-
-    updateLeftHP: function(amount) {
-        if (hpL.length >= amount) {
-            while (amount-- != 0)
-                hpL.pop().destroy();
-        }
-        else {
-            startEndText.setText("Game Over");
-            timer = this.time.create(false);
-            timer.add(2000, this.gameOver, this);
-            timer.start();
-        }
-    },
-
-    updateRightHP: function(amount) {
-        amount = 1;
-        if (hpL.length >= amount) {
-            while (amount-- != 0)
-                hpL.pop().destroy();
-        }
-        else {
-            startEndText.setText("Game Over");
-            timer = this.time.create(false);
-            timer.add(2000, this.gameOver, this);
-            timer.start();
-        }
-    },
-
     onKeyDown: function() {        
         if (!gameStarted) {
             startEndText.setText("");
             gameStarted = true;
         }
-    }       
-    
+    }    
 };

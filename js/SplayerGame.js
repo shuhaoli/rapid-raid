@@ -1,14 +1,9 @@
 var walls;
-var scoreBox;
-var score = 0;
-var hp = [];
+var scoreBoxL;
+var scoreL = 0;
+var hpL = [];
 var gameStarted;
-var gameOver;
 var startEndText;
-var timeCheck;
-var cursors;
-var crates;
-
 
 BasicGame.SplayerGame = function (game) {
 
@@ -18,7 +13,7 @@ BasicGame.SplayerGame = function (game) {
     this.add;       //  used to add sprites, text, groups, etc (Phaser.GameObjectFactory)
     this.camera;    //  a reference to the game camera (Phaser.Camera)
     this.cache;     //  the game cache (Phaser.Cache)
-    this.input;     //  the gobal input manager. You can access this.input.keyboard, this.input.mouse, as well from it. (Phaser.Input)
+    this.input;     //  the global input manager. You can access this.input.keyboard, this.input.mouse, as well from it. (Phaser.Input)
     this.load;      //  for preloading assets (Phaser.Loader)
     this.math;      //  lots of useful common math operations (Phaser.Math)
     this.sound;     //  the sound manager - add a sound, play one, set-up markers, etc (Phaser.SoundManager)
@@ -41,38 +36,39 @@ BasicGame.SplayerGame.prototype = {
     create: function () {
         this.physics.startSystem(Phaser.Physics.ARCADE);
         this.add.sprite(0,0,'backgroundGame');
-
-        gameStarted = false;
-        gameOver = false;
-        this.input.keyboard.addCallbacks(null, null, this.onKeyUp);
-
         this.initKeyInput();
         this.initTurrets();
         this.initCrates();
         this.initSprites();
         this.initBoudaries();
         this.initScore();
-
-        startEndText = this.add.text(gameWidth/2, gameHeight/2, "Press Space Bar to Begin", styleSelection);
-        startEndText.anchor.setTo(0.5, 0.5);
-
         this.initMap();
     },
 
-    //initalizes key inputs
+    // initalizes key input
     initKeyInput: function() {
         this.cursors = this.input.keyboard.createCursorKeys();
+        this.wasd = {
+            up: this.input.keyboard.addKey(Phaser.Keyboard.W),
+            down: this.input.keyboard.addKey(Phaser.Keyboard.S),
+            left: this.input.keyboard.addKey(Phaser.Keyboard.A),
+            right: this.input.keyboard.addKey(Phaser.Keyboard.D),
+        }
     },
 
     // initializes the background, buttons and pause panel
-    initMap: function() {        
+    initMap: function() {
+        gameStarted = false;
+        startEndText = this.add.text(gameWidth/2, gameHeight/2, "Press Any Key to Begin", styleSelection);
+        this.input.keyboard.addCallbacks(this, this.onKeyDown);
+        startEndText.anchor.setTo(0.5, 0.5);    
         // add buttons
         var buttonWidth = 60;
         var buttonHeight = 20;
         var ypos = scorebarHeight + gameHeight
         var xpos = gameWidth - buttonWidth;
 
-        // add pause button
+         // add pause button
         this.pauseButton = this.add.button(xpos, ypos, 'smallButton', this.pauseGame, this);
         this.pauseButtonText = this.add.text(xpos + buttonWidth/3, ypos + buttonHeight/2, "Pause", styleSmall);
         this.pauseButtonText.anchor.setTo(0, 0.35);
@@ -88,7 +84,6 @@ BasicGame.SplayerGame.prototype = {
         // add pause panel
         this.pausePanel = new PausePanel(this.game);
         this.add.existing(this.pausePanel);
-
     },
 
     // initializes turrets
@@ -98,6 +93,7 @@ BasicGame.SplayerGame.prototype = {
         var tbspacing = 15;
         var btwspacing = 14;
         var turretSize = 32;
+
 
         for (var i = 0; i < numTurrets; i++) {
             if (i < numTurrets/2) {
@@ -124,21 +120,20 @@ BasicGame.SplayerGame.prototype = {
         this.physics.arcade.enable(crates);
     },
 
-        //initalizes score
+    // initalizes sprites
     initSprites: function() {
         var spriteSize = 32;
         var pos = Math.floor(Math.random() * 2);
         if (pos == 0) {
-            this.sprite = this.add.sprite(gameWidth/2 - spriteSize*2 , scorebarHeight + spriteSize,'spriteL');
+            this.spriteL = this.add.sprite(gameWidth/2, scorebarHeight + spriteSize,'spriteL');
         }
         else if (pos == 1) {
-            this.sprite = this.add.sprite(gameWidth/2 - spriteSize*2 , gameHeight - spriteSize,'spriteL');
+            this.spriteL = this.add.sprite(gameWidth/2, gameHeight - spriteSize,'spriteL');
         }
-        this.sprite.anchor.setTo(0.5, 0.5);
-        this.physics.arcade.enable(this.sprite);
+        this.spriteL.anchor.setTo(0.5, 0.5);
+        this.physics.arcade.enable(this.spriteL);
     },
 
-    //initalizes boundaries
     initBoudaries: function() {
         walls = this.add.group();
 
@@ -174,51 +169,65 @@ BasicGame.SplayerGame.prototype = {
 
     },
 
-    //initalizes score
     initScore: function() {
-        var xpos = 40 + 12*3;
+        var xpos;
         var ypos = 25;
         var hpSpacing = 12;
         var hpStart = 4;
         var currenthp;
 
+        xpos = 40 + 12*3;
         this.add.sprite(5, 5, 'player');
-        scoreBox = this.add.text(86, 5, "0", styleMed);
-        scoreBox.anchor.setTo(1, 0);
+        scoreBoxL = this.add.text(80, 5, "0", styleMed);
+        scoreBoxL.anchor.setTo(1, 0);
 
         for (i = 0; i < hpStart; i++) {
-            currenthp = this.add.sprite(xpos - i*hpSpacing, ypos, 'hp');
-            hp.push(currenthp);
+            currentHp = this.add.sprite(xpos - i*hpSpacing, ypos, 'hp');
+            hpL.push(currentHp);
         }
-  
     },
 
     update: function () {
-        if (gameOver && this.time.now - timeCheck > 2000) {
-            this.gameOver();
-        } else if (gameStarted && !this.paused && !gameOver) {
-            this.moveSprite();
-
-            this.physics.arcade.collide(this.sprite, walls);
-            this.physics.arcade.collide(this.sprite, crates);
+        if (gameStarted && !this.paused) {
+            this.moveSpriteL();
+            this.physics.arcade.collide(this.spriteL, walls);
+            this.physics.arcade.collide(this.spriteL, crates);
         }            
     },
 
-    moveSprite: function() {
-        this.sprite.body.velocity.x = 0;
-        this.sprite.body.velocity.y = 0;
+    updateLeftScore: function(amount) {
+        scoreL += amount;
+        scoreBoxL.setText(scoreL);
+    },
 
-        if (this.cursors.up.isDown) {
-            this.sprite.body.velocity.y = -100;
+    updateLeftHP: function(amount) {
+        if (hpL.length >= amount) {
+            while (amount-- != 0)
+                hpL.pop().destroy();
         }
-        else if (this.cursors.down.isDown) {
-            this.sprite.body.velocity.y = 100;
+        else {
+            startEndText.setText("Game Over");
+            timer = this.time.create(false);
+            timer.add(2000, this.gameOver, this);
+            timer.start();
         }
-        if (this.cursors.left.isDown) {
-            this.sprite.body.velocity.x = -100;
+    },
+
+    moveSpriteL: function() {
+        this.spriteL.body.velocity.x = 0;
+        this.spriteL.body.velocity.y = 0;
+
+        if (this.wasd.up.isDown || this.cursors.up.isDown) {
+            this.spriteL.body.velocity.y = -100;
         }
-        else if (this.cursors.right.isDown) {
-            this.sprite.body.velocity.x = 100;
+        else if (this.wasd.down.isDown || this.cursors.down.isDown) {
+            this.spriteL.body.velocity.y = 100;
+        }
+        if (this.wasd.left.isDown || this.cursors.left.isDown) {
+            this.spriteL.body.velocity.x = -100;
+        }
+        else if (this.wasd.right.isDown || this.cursors.right.isDown) {
+            this.spriteL.body.velocity.x = 100;
         }  
     },
 
@@ -251,6 +260,7 @@ BasicGame.SplayerGame.prototype = {
         this.state.start('SCrate');
     },
 
+
     quitGame: function (pointer) {
         this.resetInfo();
         this.state.start('MainMenu');
@@ -258,46 +268,22 @@ BasicGame.SplayerGame.prototype = {
 
     gameOver: function() {
         this.resetInfo();
-        this.state.start('Sscore');   
+        this.state.start('Sscore');
     },
 
     // call when game is ending (either restart/gameover)
     // if any of this info is needed in a future state, remove from here
     resetInfo: function() {
-        scoreBox = null;
-        hp = [];
+        scoreBoxL = null;
         aplacedCrates = [];
+        hpL = [];
+        hpR = [];
     },
 
-    //true - left false - right
-    updateScore: function(number) {
-        score += number;
-        scoreBox.setText(score);
-    },
-
-    //true - left false - right
-    updateHp: function() {
-        if (hp.length != 0) {
-            hp.pop().destroy();
-        } else {
-            startEndText.setText("Game Over");
-            gameOver = true;
-            timeCheck = this.time.now;
+    onKeyDown: function() {        
+        if (!gameStarted) {
+            startEndText.setText("");
+            gameStarted = true;
         }
-    },
-
-    onKeyUp: function() {
-        switch (event.keyCode) {
-            case Phaser.Keyboard.SPACEBAR:
-                if (!gameStarted) {
-                    startEndText.setText("");
-                    gameStarted = true;
-                }
-                break;
-            }
-
-    }
-
+    }    
 };
-
-
