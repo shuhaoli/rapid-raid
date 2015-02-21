@@ -4,6 +4,8 @@ var scoreL = 0;
 var hpL = [];
 var gameStarted;
 var startEndText;
+var hit = false;
+var tweens = [];
 
 BasicGame.SplayerGame = function (game) {
 
@@ -42,6 +44,7 @@ BasicGame.SplayerGame.prototype = {
         this.initSprites();
         this.initBoudaries();
         this.initScore();
+        this.initBullets();
         this.initMap();
     },
 
@@ -90,7 +93,7 @@ BasicGame.SplayerGame.prototype = {
     initTurrets: function() {
         // add turrets with appropriate placement
         var numTurrets = 16;
-        var tbspacing = 15;
+        var tbspacing = 8;
         var btwspacing = 14;
         var turretSize = 32;
 
@@ -100,7 +103,8 @@ BasicGame.SplayerGame.prototype = {
                 this.add.sprite(0,scorebarHeight + i*(turretSize + btwspacing) + tbspacing, 'turretL');
             }
             else {
-                this.turret = this.add.sprite(gameWidth - 28, scorebarHeight + (i - numTurrets/2)*(turretSize + btwspacing) + tbspacing, 'turretR');
+                this.turret = this.add.sprite
+                (gameWidth - 28, scorebarHeight + (i - numTurrets/2)*(turretSize + btwspacing) + tbspacing + 2*turretSize/3, 'turretR');
             }
         }
     },
@@ -130,7 +134,8 @@ BasicGame.SplayerGame.prototype = {
         else if (pos == 1) {
             this.spriteL = this.add.sprite(gameWidth/2, gameHeight - spriteSize,'spriteL');
         }
-        this.spriteL.animations.add('walk');
+        this.spriteL.animations.add('walk', [0,1]);
+        this.spriteL.animations.add('hit', [2, 3]);
         this.spriteL.anchor.setTo(0.5, 0.5);
         this.physics.arcade.enable(this.spriteL);
     },
@@ -188,13 +193,97 @@ BasicGame.SplayerGame.prototype = {
         }
     },
 
+    initBullets: function() {
+        this.bullets = this.add.group();
+        this.bullets.enableBody = true;
+        this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
+
+        this.bullets.createMultiple(100, 'bullet');
+        this.bullets.setAll('checkWorldBounds', true);
+        this.bullets.setAll('outOfBoundsKill', true);
+        this.bullets.children.forEach(function(bullet){
+            bullet.anchor.setTo(0.5,0.5);
+        });
+    
+    },
+
+    fire: function() {
+        var shouldFire = this.rnd.integerInRange(0, 1000);
+        if (shouldFire > 995) {
+            var turretNumber = this.rnd.integerInRange(0, 7);
+            var tbspacing = 10;
+            var btwspacing = 14;
+            var turretSize = 32;
+
+            var side = this.rnd.integerInRange(0, 1);
+            var xpos;
+            var ypos;
+            if (side == 0) {
+                xpos = 0 + turretSize;
+                ypos = scorebarHeight + tbspacing + turretNumber*(turretSize + btwspacing) + 28/2 - 3;
+            } else {
+                xpos = gameWidth - turretSize;
+                ypos = scorebarHeight + tbspacing + turretNumber*(turretSize + btwspacing) + 28/2 + 2*turretSize/3;
+            }
+
+
+            this.bullet =  this.bullets.getFirstExists(false);
+             if (!this.bullet) {
+                this.bullet = this.add.sprite(0, 0, 'bullet');
+                this.bullet.checkWorldBounds = true;
+                this.bullet.outOfBoundsKill = true;
+                this.physics.arcade.enable(this.bullet);
+                this.bullet.enableBody = true;
+                this.bullet.anchor.setTo(0.5, 0.5);
+                this.bullets.add(this.bullet);
+            }
+
+            this.bullet.reset(xpos, ypos);
+
+            if (side == 0) {
+                tweens[tweens.length] = this.bulletTween = this.add.tween(this.bullet).to({x: gameWidth, y: ypos}, 10000, 
+                    Phaser.Easing.Linear.None , true, 0, false);
+            } else {
+                tweens[tweens.length] = this.add.tween(this.bullet).to({x: 0, y: ypos}, 10000, 
+                    Phaser.Easing.Linear.None, true, 0, false);
+                this.bullet.rotation = 3.1;
+            }
+        }
+
+    },
+
+    hit: function(spriteL, bullet) {
+        bullet.kill();
+        timer = this.time.create(false);
+        timer.add(500, function() {
+            hit = false;
+            this.spriteL.animations.stop('hit', true);
+            this.spriteL.animations.stop('walk', true);
+        }, this);
+        timer.start();
+        spriteL.play('hit', 10, true, false);
+        if (!hit) {
+            this.updateLeftHP(1);
+        }
+        hit = true;
+    },
+
+
     update: function () {
         if (gameStarted && !this.paused) {
             this.moveSpriteL();
             this.physics.arcade.collide(this.spriteL, walls);
             this.physics.arcade.collide(this.spriteL, crates);
+            this.physics.arcade.overlap(this.spriteL, this.bullets, this.hit, null, this);
+            crates.children.forEach(function(crate){
+                this.physics.arcade.overlap(crate, this.bullets, function(crate, bullet) {
+                    bullet.kill();
+                }, null, this);
+            }, this);
+            this.fire();
         }            
     },
+
 
     updateLeftScore: function(amount) {
         scoreL += amount;
@@ -215,26 +304,45 @@ BasicGame.SplayerGame.prototype = {
     },
 
     moveSpriteL: function() {
+        var moving = false;
         this.spriteL.body.velocity.x = 0;
         this.spriteL.body.velocity.y = 0;
 
-        if (this.wasd.up.isDown || this.cursors.up.isDown) {
-            this.spriteL.body.velocity.y = -100;
+        if (!hit) {
+
+            if (this.wasd.up.isDown || this.cursors.up.isDown) {
+                this.spriteL.body.velocity.y = -100;
+                this.spriteL.animations.play('walk', 20, true);
+                var moving = true;
+            }
+            else if (this.wasd.down.isDown || this.cursors.down.isDown) {
+                this.spriteL.body.velocity.y = 100;
+                this.spriteL.animations.play('walk', 20, true);
+                var moving = true;
+            } 
+
+            if (this.wasd.left.isDown || this.cursors.left.isDown) {
+                this.spriteL.body.velocity.x = -100;
+                this.spriteL.animations.play('walk', 20, true);
+                var moving = true;
+           }
+            else if (this.wasd.right.isDown || this.cursors.right.isDown) {
+                this.spriteL.body.velocity.x = 100;
+               this.spriteL.animations.play('walk', 20, true);
+                var moving = true;
+            } 
+        
+
+        if (!moving) {
+            this.spriteL.animations.stop('walk', true);
         }
-        else if (this.wasd.down.isDown || this.cursors.down.isDown) {
-            this.spriteL.body.velocity.y = 100;
-        }
-        if (this.wasd.left.isDown || this.cursors.left.isDown) {
-            this.spriteL.body.velocity.x = -100;
-        }
-        else if (this.wasd.right.isDown || this.cursors.right.isDown) {
-            this.spriteL.body.velocity.x = 100;
-        }  
+    }
     },
 
     // consider adding callback for resuming/pausing game in order to sync animation with actual pausing/resuming
     pauseGame: function () {
         if (!this.paused) {
+            this.stopAnimations();
             this.paused = true;
             // show pause panel
             this.pausePanel.show();
@@ -243,9 +351,10 @@ BasicGame.SplayerGame.prototype = {
             this.pauseButtonText.visible = false;
             this.playButton.visible = true;
             this.playButtonText.visible = true;
-            this.spriteL.animations.stop(null, true);
+
         }
         else {
+            this.startAnimations();
             this.paused = false;
             // hide pause panel
             this.pausePanel.hide();
@@ -254,9 +363,24 @@ BasicGame.SplayerGame.prototype = {
             this.playButtonText.visible = false;
             this.pauseButton.visible = true;
             this.pauseButtonText.visible = true;
-            this.spriteL.animations.play('walk', 20, true);
         }
     },
+
+    stopAnimations: function() {
+        this.spriteL.animations.stop(null, true);
+        this.spriteL.body.velocity.x = 0;
+        this.spriteL.body.velocity.y = 0;
+        for (i = 0; i < tweens.length; i++) {
+            tweens[i].pause();
+        }
+    },
+
+    startAnimations: function() {
+        for (i = 0; i < tweens.length; i++) {
+            tweens[i].resume();
+        }
+    },
+    
 
     restartGame: function() {
         this.resetInfo();
@@ -286,7 +410,6 @@ BasicGame.SplayerGame.prototype = {
     onKeyDown: function() {        
         if (!gameStarted) {
             startEndText.setText("");
-            this.spriteL.animations.play('walk', 20, true);
             gameStarted = true;
         }
     }    

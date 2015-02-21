@@ -76,7 +76,7 @@ BasicGame.mCrate.prototype = {
     initTurrets: function() {
         // add turrets with appropriate placement
         var numTurrets = 16;
-        var tbspacing = 15;
+        var tbspacing = 8;
         var btwspacing = 14;
         var turretSize = 32;
 
@@ -86,7 +86,8 @@ BasicGame.mCrate.prototype = {
                 this.add.sprite(0,scorebarHeight + i*(turretSize + btwspacing) + tbspacing, 'turretL');
             }
             else {
-                this.turret = this.add.sprite(gameWidth - 28, scorebarHeight + (i - numTurrets/2)*(turretSize + btwspacing) + tbspacing, 'turretR');
+                this.turret = this.add.sprite
+                (gameWidth - 28, scorebarHeight + (i - numTurrets/2)*(turretSize + btwspacing) + tbspacing + 2*turretSize/3, 'turretR');
             }
         }
     },
