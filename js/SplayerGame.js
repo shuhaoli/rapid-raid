@@ -254,6 +254,11 @@ BasicGame.SplayerGame.prototype = {
 
     hit: function(spriteL, bullet) {
         bullet.kill();
+        spriteL.play('hit', 10, true, false);
+        if (!hit) {
+            this.updateLeftHP(1);
+        }
+        hit = true;
         timer = this.time.create(false);
         timer.add(500, function() {
             hit = false;
@@ -261,11 +266,6 @@ BasicGame.SplayerGame.prototype = {
             this.spriteL.animations.stop('walk', true);
         }, this);
         timer.start();
-        spriteL.play('hit', 10, true, false);
-        if (!hit) {
-            this.updateLeftHP(1);
-        }
-        hit = true;
     },
 
 
@@ -394,6 +394,7 @@ BasicGame.SplayerGame.prototype = {
     },
 
     gameOver: function() {
+        this.state.states['Sscore'].finalScore = scoreL;
         this.resetInfo();
         this.state.start('Sscore');
     },

@@ -313,6 +313,11 @@ BasicGame.MplayerGame.prototype = {
 
     hitL: function(spriteL, bullet) {
         bullet.kill();
+        spriteL.play('hitL', 10, true, false);
+        if (!hitL) {
+        this.updateLeftHP(1);
+        }
+        hitL = true;
         timer = this.time.create(false);
         timer.add(500, function() {
             hitL = false;
@@ -320,15 +325,15 @@ BasicGame.MplayerGame.prototype = {
             this.spriteL.animations.stop('walkL', true);
         }, this);
         timer.start();
-        spriteL.play('hitL', 10, true, false);
-        if (!hitL) {
-        this.updateLeftHP(1);
-        }
-        hitL = true;
     },
 
     hitR: function(spriteR, bullet) {
         bullet.kill();
+        spriteR.play('hitR', 10, true, false);
+        if (!hitR) {
+        this.updateRightHP(1);
+        }
+        hitR = true;
         timer = this.time.create(false);
         timer.add(500, function() {
             hitR = false;
@@ -336,11 +341,6 @@ BasicGame.MplayerGame.prototype = {
             this.spriteR.animations.stop('walkR', true);
         }, this);
         timer.start();
-        spriteR.play('hitR', 10, true, false);
-        if (!hitR) {
-        this.updateRightHP(1);
-        }
-        hitR = true;
     },
 
     updateLeftScore: function(amount) {
@@ -504,6 +504,8 @@ BasicGame.MplayerGame.prototype = {
     },
 
     gameOver: function() {
+        this.state.states['Mscore'].finalScoreL = scoreL;
+        this.state.states['Mscore'].finalScoreR = scoreR;
         this.resetInfo();
         this.state.start('Mscore');
     },

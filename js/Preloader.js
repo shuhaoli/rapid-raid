@@ -51,7 +51,7 @@ BasicGame.Preloader.prototype = {
 		this.load.image('player', 'assets/playerIcon1.png');
 		this.load.spritesheet('spriteL', 'assets/spriteSheet.png', 20, 20, 4);
 		this.load.spritesheet('spriteR', 'assets/spriteSheet.png', 20, 20, 4);
-		this.load.image('bullet', 'assets/bullet1.png');
+		this.load.image('bullet', 'assets/bullet2.png');
 
 	},
 

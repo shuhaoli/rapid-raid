@@ -11,8 +11,21 @@ BasicGame.Sscore = function (game) {
 BasicGame.Sscore.prototype = {
 
 	create: function () {
-		this.background = this.add.sprite(0, 0, 'sscoreBackground');
-		this.replayButton = this.add.button((screenWidth - 170)/2 , 345, 'replayButton', this.replayGame, this);
+		var finalScore = "Final Score: ";
+		this.background = this.add.sprite(0, 0, 'background1');
+		this.scoreText = this.add.text(gameWidth/2, scorebarHeight + gameHeight / 3, '', styleSelection);
+		this.scoreText.anchor.setTo(0.5, 0.5);
+		this.scoreText.setText(finalScore.concat(this.finalScore));
+
+		this.replayButton = this.add.button(gameWidth/3, scorebarHeight + gameHeight *3/4, 'selectionButton', this.replayGame, this);
+		this.replayButton.anchor.setTo(0.5, 0.5);
+        this.replayButtonText = this.add.text(gameWidth/3, scorebarHeight + gameHeight *3/4, "Replay", styleSelection);
+        this.replayButtonText.anchor.setTo(0.5, 0.5);
+
+        this.homeButton = this.add.button(2*gameWidth/3, scorebarHeight + gameHeight *3/4, 'selectionButton', this.home, this);
+		this.homeButton.anchor.setTo(0.5, 0.5);
+        this.homeButtonText = this.add.text(2*gameWidth/3, scorebarHeight + gameHeight *3/4, "Home", styleSelection);
+        this.homeButtonText.anchor.setTo(0.5, 0.5);
 	},
 
 	update: function () {
@@ -22,7 +35,11 @@ BasicGame.Sscore.prototype = {
 	},
 
 	replayGame: function (pointer) {
-		this.state.start('SplayerGame');
+		this.state.start('SCrate');
+	},
+
+	home: function (pointer) {
+		this.state.start('MainMenu');
 	}
 
 };
