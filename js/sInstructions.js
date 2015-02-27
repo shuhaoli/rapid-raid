@@ -27,6 +27,7 @@ BasicGame.sInstructions.prototype = {
         	this.backButtonText = this.add.text(buttonWidth/6, ypos + buttonHeight/2, "Back", styleSmall);
         	this.backButtonText.anchor.setTo(0, 0.35);
         }
+
 	},
 
 	update: function () {
