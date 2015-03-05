@@ -33,6 +33,7 @@ BasicGame.Selection.prototype = {
         var ypos = scorebarHeight + gameHeight
         var xpos = 0;
 
+        // add back button
         this.backButton = this.add.button(xpos, ypos, 'smallButton', this.goBack, this);
         this.backButtonText = this.add.text(xpos + buttonWidth/6, ypos + buttonHeight/2, "Back", styleSmall);
         this.backButtonText.anchor.setTo(0, 0.35);

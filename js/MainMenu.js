@@ -15,15 +15,15 @@ BasicGame.MainMenu.prototype = {
         this.settingsButton = this.add.button(64, 360, 'settingsButton', this.goSettings, this);
 
         // add sInstructions button
-        this.sInstructionsButton = this.add.button(488, 360, 'instructionsButton', this.goSInstructions, this);
+        this.sInstructionsButton = this.add.button(388, 360, 'sInstructionsButton', this.goSInstructions, this);
 
         // add mInstructions button
-        this.mInstructionsButton = this.add.button(388, 360, 'instructionsButton', this.goMInstructions, this);
+        this.mInstructionsButton = this.add.button(438, 360, 'mInstructionsButton', this.goMInstructions, this);
 
 
         // add play button
         this.playButton = this.add.button(170, 225, 'selectionButton', this.goPlay, this);
-        this.playButtonText = this.add.text(170, 225, "Play", styleSelection);
+        this.playButtonText = this.add.text(250, 240, "Play", styleSelection);
 	},
 
 	update: function () {
