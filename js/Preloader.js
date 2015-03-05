@@ -52,6 +52,12 @@ BasicGame.Preloader.prototype = {
 		this.load.spritesheet('spriteL', 'assets/spriteSheet.png', 20, 20, 4);
 		this.load.spritesheet('spriteR', 'assets/spriteSheet.png', 20, 20, 4);
 		this.load.image('bullet', 'assets/bullet2.png');
+		this.load.image('bomb', 'assets/bomb.png');
+		this.load.image('gold', 'assets/gold.png');
+		this.load.image('cash', 'assets/cash.png');
+		this.load.image('spike', 'assets/spike.png');
+		this.load.image('health', 'assets/health.png');
+		this.load.image('health-full', 'assets/health-full.png');
 
 	},
 

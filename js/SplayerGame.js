@@ -6,6 +6,8 @@ var gameStarted;
 var startEndText;
 var hit = false;
 var tweens = [];
+var placedTokens;
+var timers = [];
 
 BasicGame.SplayerGame = function (game) {
 
@@ -44,8 +46,10 @@ BasicGame.SplayerGame.prototype = {
         this.initSprites();
         this.initBoudaries();
         this.initScore();
+        this.initTokens();
         this.initBullets();
         this.initMap();
+
     },
 
     // initalizes key input
@@ -179,7 +183,7 @@ BasicGame.SplayerGame.prototype = {
         var xpos;
         var ypos = 25;
         var hpSpacing = 12;
-        var hpStart = 4;
+        var startHp = 4;
         var currenthp;
 
         xpos = 40 + 12*3;
@@ -187,7 +191,7 @@ BasicGame.SplayerGame.prototype = {
         scoreBoxL = this.add.text(80, 5, "0", styleMed);
         scoreBoxL.anchor.setTo(1, 0);
 
-        for (i = 0; i < hpStart; i++) {
+        for (i = 0; i < startHp; i++) {
             currentHp = this.add.sprite(xpos - i*hpSpacing, ypos, 'hp');
             hpL.push(currentHp);
         }
@@ -204,7 +208,21 @@ BasicGame.SplayerGame.prototype = {
         this.bullets.children.forEach(function(bullet){
             bullet.anchor.setTo(0.5,0.5);
         });
-    
+    },
+
+    initTokens: function() {
+        this.tokens = this.add.group();
+        this.tokens.enableBody = true;
+        this.tokens.physicsBodyType = Phaser.Physics.ARCADE;
+
+        this.tokens.createMultiple(100, 'player');
+        this.tokens.setAll('checkWorldBounds', true);
+        this.tokens.setAll('outOfBoundsKill', true);
+        this.tokens.children.forEach(function(token){
+            token.anchor.setTo(0.5,0.5);
+        });
+
+        placedTokens = this.add.group();
     },
 
     fire: function() {
@@ -241,7 +259,7 @@ BasicGame.SplayerGame.prototype = {
             this.bullet.reset(xpos, ypos);
 
             if (side == 0) {
-                tweens[tweens.length] = this.bulletTween = this.add.tween(this.bullet).to({x: gameWidth, y: ypos}, 10000, 
+                tweens[tweens.length] = this.add.tween(this.bullet).to({x: gameWidth, y: ypos}, 10000, 
                     Phaser.Easing.Linear.None , true, 0, false);
             } else {
                 tweens[tweens.length] = this.add.tween(this.bullet).to({x: 0, y: ypos}, 10000, 
@@ -253,7 +271,9 @@ BasicGame.SplayerGame.prototype = {
     },
 
     hit: function(spriteL, bullet) {
-        bullet.kill();
+        if (bullet.alive){
+            bullet.kill();
+        }
         spriteL.play('hit', 10, true, false);
         if (!hit) {
             this.updateLeftHP(1);
@@ -275,12 +295,14 @@ BasicGame.SplayerGame.prototype = {
             this.physics.arcade.collide(this.spriteL, walls);
             this.physics.arcade.collide(this.spriteL, crates);
             this.physics.arcade.overlap(this.spriteL, this.bullets, this.hit, null, this);
+            this.physics.arcade.overlap(this.spriteL, placedTokens, this.overlapToken, null, this);
             crates.children.forEach(function(crate){
                 this.physics.arcade.overlap(crate, this.bullets, function(crate, bullet) {
                     bullet.kill();
                 }, null, this);
             }, this);
             this.fire();
+            this.generateTokens();
         }            
     },
 
@@ -290,16 +312,27 @@ BasicGame.SplayerGame.prototype = {
         scoreBoxL.setText(scoreL);
     },
 
+
     updateLeftHP: function(amount) {
-        if (hpL.length >= amount) {
-            while (amount-- != 0)
-                hpL.pop().destroy();
-        }
-        else {
-            startEndText.setText("Game Over");
-            timer = this.time.create(false);
-            timer.add(2000, this.gameOver, this);
-            timer.start();
+        if (hpL.length - amount < 5) {
+            if (amount < 0) {
+                while ((amount++ < 0)) {
+                    var xpos = 40 + 12*3;
+                    var hpSpacing = 12;
+                    var ypos = 25;
+                    currentHp = this.add.sprite(xpos - (hpL.length)*hpSpacing, ypos, 'hp');
+                    hpL.push(currentHp);
+                }
+            } else if (hpL.length >= amount) {
+                while (amount-- != 0)
+                    hpL.pop().destroy();
+            }
+            else {
+                startEndText.setText("Game Over");
+                timer = this.time.create(false);
+                timer.add(2000, this.gameOver, this);
+                timer.start();
+            }
         }
     },
 
@@ -373,11 +406,18 @@ BasicGame.SplayerGame.prototype = {
         for (i = 0; i < tweens.length; i++) {
             tweens[i].pause();
         }
+        for (i = 0; i < timers.length; i++) {
+            timers[i].pause();
+        }
+
     },
 
     startAnimations: function() {
         for (i = 0; i < tweens.length; i++) {
             tweens[i].resume();
+        }
+        for (i = 0; i < timers.length; i++) {
+            timers[i].resume();
         }
     },
     
@@ -413,5 +453,116 @@ BasicGame.SplayerGame.prototype = {
             startEndText.setText("");
             gameStarted = true;
         }
-    }    
+    },
+
+    generateTokens: function() {
+       var generate = this.rnd.integerInRange(0, 1000);
+       if (generate  > 995) {
+        this.placeToken();
+       }
+    },
+
+    placeToken: function() {
+        this.token =  this.tokens.getFirstExists(false);
+             if (!this.token) {
+                this.token = this.add.sprite(0, 0, 'player');
+                this.token.checkWorldBounds = true;
+                this.token.outOfBoundsKill = true;
+                this.physics.arcade.enable(this.token);
+                this.token.enableBody = true;
+                this.token.anchor.setTo(0.5, 0.5);
+                this.tokens.add(this.token);
+            }
+
+        var tokenImage;
+        var whatToken = this.rnd.integerInRange(0, 5);
+        switch(whatToken){
+                case 0:
+                    tokenImage = "bomb";
+                    this.token.name = "bomb"
+                    break;
+                case 1:
+                    tokenImage = "gold";
+                    this.token.name = "gold"
+                    break;
+                case 2:
+                    tokenImage = "cash";
+                    this.token.name = "cash"
+                    break;
+                case 3:
+                    tokenImage = "spike";
+                    this.token.name = "spike"
+                    break;
+                case 4:
+                    tokenImage = "health";
+                    this.token.name = "health"
+                    break;
+                case 5:
+                    tokenImage = "health-full";
+                    this.token.name = "health-full"
+                    break;
+                default:
+                    tokenImage = "cash";
+                    this.token.name = "cash"
+                    break;
+            }
+        this.token.loadTexture(tokenImage);
+        this.token.reset(this.randomX(), this.randomY());
+
+        while (this.physics.arcade.overlap(this.token, placedTokens)
+            || this.physics.arcade.overlap(this.token, crates)
+            || this.physics.arcade.overlap(this.token, walls) 
+            || this.physics.arcade.overlap(this.token, this.spriteL)) {
+            this.token.reset(this.randomX(), this.randomY());
+        }
+
+        placedTokens.add(this.token);
+        timer = this.time.create(false);
+        timer.add(10000, this.removeToken, this.token);
+        timer.start();
+        timers[timers.length] = timer;
+    },
+
+    removeToken: function() {
+        this.kill();
+        placedTokens.remove(this);
+    },
+ 
+    randomX: function() {
+        var min = 64;
+        var max = gameWidth - min;
+        return Math.floor(Math.random() * (max - min) + min);  
+    },
+ 
+    randomY: function() {
+        var min = scorebarHeight + 32;
+        var max = gameHeight + scorebarHeight - 32;
+        return Math.floor(Math.random() * (max - min) + min);  
+    }, 
+
+    overlapToken: function(sprite, token) {
+        if (token.name == "bomb"){
+            this.updateLeftHP(2);
+            token.kill();
+        } else if (token.name == "gold"){
+            this.updateLeftScore(100);
+            token.kill();
+        } else if (token.name == "cash"){
+            this.updateLeftScore(50);
+            token.kill();
+        } else if (token.name == "spike"){
+            this.updateLeftHP(1);
+            token.kill();
+        } else if (token.name == "health"){
+            this.updateLeftHP(-1);
+            token.kill();
+        } else if (token.name == "health-full"){
+            var add = hpL.length -4;
+            this.updateLeftHP(add);  
+            token.kill();   
+        } else {
+            token.kill();
+        }
+    }
 };
+
